@@ -4,17 +4,16 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{4CDED4EA-EE94-42CC-810F-83C95AC65AD2}</ProjectGuid>
-    <OutputType>Exe</OutputType>
-    <RootNamespace>CoreWCFService</RootNamespace>
-    <AssemblyName>CoreWCFService</AssemblyName>
+    <ProjectGuid>{74B6B34F-8A25-4353-B637-BF95BEFA45E7}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>DriversLibrary</RootNamespace>
+    <AssemblyName>DriversLibrary</AssemblyName>
     <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
-    <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
     <Deterministic>true</Deterministic>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <PlatformTarget>AnyCPU</PlatformTarget>
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
@@ -24,7 +23,6 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <PlatformTarget>AnyCPU</PlatformTarget>
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
     <OutputPath>bin\Release\</OutputPath>
@@ -35,7 +33,6 @@
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Core" />
-    <Reference Include="System.ServiceModel" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -44,29 +41,10 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="DataBaseManagerService.cs" />
-    <Compile Include="IDatabaseManagerService.cs" />
-    <Compile Include="ITrendingService.cs" />
-    <Compile Include="tagModel\AnalogInput.cs" />
-    <Compile Include="tagModel\AnalogOutput.cs" />
-    <Compile Include="tagModel\DigitalInput.cs" />
-    <Compile Include="tagModel\DigitalOutput.cs" />
-    <Compile Include="tagModel\IAnalogTag.cs" />
-    <Compile Include="tagModel\IDigitalTag.cs" />
-    <Compile Include="tagModel\IOutputTag.cs" />
-    <Compile Include="tagModel\IInputTag.cs" />
-    <Compile Include="Program.cs" />
+    <Compile Include="IDriver.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="tagModel\ITag.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="App.config" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\DriversLibrary\DriversLibrary.csproj">
-      <Project>{74b6b34f-8a25-4353-b637-bf95befa45e7}</Project>
-      <Name>DriversLibrary</Name>
-    </ProjectReference>
+    <Compile Include="RealTimeDriver.cs" />
+    <Compile Include="SimulationDriver.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
