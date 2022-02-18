@@ -20,7 +20,7 @@ namespace CoreWCFService.TagModel
         {
         }
 
-        public abstract override void WriteToXml(XDocument doc);
+        public abstract override void WriteToXml(ref XDocument doc);
 
     }
 }

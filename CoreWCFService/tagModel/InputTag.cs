@@ -25,6 +25,6 @@ namespace CoreWCFService.TagModel
             ScanOnOff = scanOnOff;
         }
 
-        public abstract override void WriteToXml(XDocument doc);
+        public abstract override void WriteToXml(ref XDocument doc);
     }
 }

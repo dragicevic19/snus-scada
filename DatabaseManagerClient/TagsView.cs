@@ -23,7 +23,7 @@ namespace DatabaseManagerClient
             {
                 System.Console.Clear();
 
-                Console.WriteLine("\n1 - Add ANALOG tag\n2 - Add DIGITAL tag\n3 - Remove tag\n4 - Change output value\n7 - Show values of output tags" +
+                Console.WriteLine("\n1 - Add ANALOG tag\n2 - Add DIGITAL tag\n3 - Remove tag\n4 - Change output value\n5 - Show values of output tags" +
                     "\n6 - Turn scan on\n7 - Turn scan off\n8 - Log out\n");
                 Console.Write(">> ");
                 string input = Console.ReadLine();

@@ -10,6 +10,7 @@ namespace CoreWCFService
 {
     public class AnalogInput : InputTag
     {
+        const string TYPE = "AnalogInput";
         public double LowLimit { get; set; }
         public double HighLimit { get; set; }
         public string Units { get; set; }
@@ -27,20 +28,35 @@ namespace CoreWCFService
         {
         }
 
-        public override void WriteToXml(XDocument doc)
+        public override void WriteToXml(ref XDocument doc)
         {
-            XElement tag = doc.Element("tag");
-            tag.Add(new XElement("type", "AnalogInput"),
-                    new XElement("name", Name),
-                    new XElement("description", Description),
-                    new XElement("driver", Driver),
-                    new XElement("ioAddress", IOAddress),
-                    new XElement("scanTime", ScanTime),         // TODO: alarmi
-                    new XElement("scanOnOff", ScanOnOff),
-                    new XElement("lowLimit", LowLimit),
-                    new XElement("highLimit", HighLimit),
-                    new XElement("units", Units));
+            XElement tag = doc.Element("root");
+            tag.Add(new XElement("tag", 
+                    new XAttribute("type" , TYPE),
+                    new XAttribute("name", Name),
+                    new XAttribute("description", Description),
+                    new XAttribute("driver", Driver),
+                    new XAttribute("ioAddress", IOAddress),
+                    new XAttribute("scanTime", ScanTime),         // TODO: alarmi
+                    new XAttribute("scanOnOff", ScanOnOff),
+                    new XAttribute("lowLimit", LowLimit),
+                    new XAttribute("highLimit", HighLimit),
+                    new XAttribute("units", Units)));
         }
 
+        public static Tag MakeTagFromConfigFile(XElement t)
+        {
+            string name = (string)t.Attribute("name");
+            string desc = (string)t.Attribute("description");
+            string driver = (string)t.Attribute("driver");
+            string ioAddress = (string)t.Attribute("ioAddress");
+            double scanTime = (double)t.Attribute("scanTime");
+            bool scanOnOff = (bool)t.Attribute("scanOnOff");
+            double lowLimit = (double)t.Attribute("lowLimit");
+            double highLimit = (double)t.Attribute("highLimit");
+            string units = (string)t.Attribute("units");
+
+            return new AnalogInput(name, desc, ioAddress, driver, scanTime, scanOnOff, lowLimit, highLimit, units);
+        }
     }
 }

@@ -10,6 +10,6 @@ namespace CoreWCFService
 {
     public interface ITag
     {
-        void WriteToXml(XDocument doc);
+        void WriteToXml(ref XDocument doc);
     }
 }

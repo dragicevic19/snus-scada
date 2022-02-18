@@ -6,6 +6,7 @@ using System.Security.Cryptography;
 using System.ServiceModel;
 using System.Text;
 using System.Threading.Tasks;
+using System.Xml;
 using System.Xml.Linq;
 using CoreWCFService.TagDbModel;
 using CoreWCFService.TagModel;
@@ -19,7 +20,7 @@ namespace CoreWCFService
         private static Dictionary<string, Tag> tags = new Dictionary<string, Tag>();    // tagName is key
 
         const string LOGIN_FAILED_STR = "Login failed";
-        const string CONFIG_FILE_PATH = "data/scadaConfig.xml";
+        const string CONFIG_FILE_PATH = @"../../data/scadaConfig.xml";
 
         public bool Registration(string username, string password)
         {
@@ -37,9 +38,45 @@ namespace CoreWCFService
                     return false;
                 }
             }
-
             Console.WriteLine("User successfully registered: " + username);
             return true;
+        }
+
+        public void LoadScadaConfig()
+        {
+            try
+            {
+                XElement configElements = XElement.Load(CONFIG_FILE_PATH);
+                var tagConfig = configElements.Descendants("tag");
+                foreach (var t in tagConfig)
+                {
+                    Tag tag = Tag.MakeTagFromConfigFile(t);
+                    FindValueOfTag(ref tag);
+                    tags.Add(tag.Name, tag);
+                }
+            } catch (Exception e)
+            {
+                Console.WriteLine(e.Message);
+            }
+        }
+
+        private void FindValueOfTag(ref Tag tag)
+        {
+            List<TagDb> allTags = new List<TagDb>();
+            using (var db = new TagContext())
+            {
+                foreach(var t in db.Tags)
+                {
+                    if (t.TagName == tag.Name)  // bar se nadam da u bazi pakuje po redosledu upisivanja
+                    {
+                        allTags.Add(t);
+                    }
+                }
+            }
+            if (allTags.Count == 0) return;
+            
+            TagDb last = allTags.Last();
+            tag.Value = last.Value;
         }
 
         public string Login(string username, string password)
@@ -52,6 +89,7 @@ namespace CoreWCFService
                     {
                         string token = GenerateToken(username);
                         authenticatedUsers.Add(token, user);
+                        //if (tags.Values.Count == 0) LoadScadaConfig();
                         Console.WriteLine("User successfully logged in: " + username + ", with token: " + token);
 
                         return token;
@@ -163,7 +201,7 @@ namespace CoreWCFService
                 try
                 {
                     db.Tags.Add(new TagDb(tag.Name, tag.Value, DateTime.Now));
-
+                    db.SaveChanges();
                     return true;
                 }
                 catch (Exception e)
@@ -176,33 +214,38 @@ namespace CoreWCFService
 
         private bool WriteXmlConfig()
         {
-            /*try
+            try
             {
-                XDocument doc = new XDocument();
+                if (!File.Exists(CONFIG_FILE_PATH)) CreateNewXmlFile();
 
-                if (!File.Exists(CONFIG_FILE_PATH))
-                {
-                    Console.WriteLine("USAO OVDE");
-                    doc.Save(CONFIG_FILE_PATH);
-                }
-                doc = XDocument.Load(CONFIG_FILE_PATH);
-                
+                XDocument doc = XDocument.Load(CONFIG_FILE_PATH);
+                doc.Descendants("tag").Remove();                    // brisem sve pa ponovo sve upisujem zbog izmena?
+                                                                    // ili je mozda bolje da trazim da li postoji pa onda menjam?
                 foreach (KeyValuePair<string, Tag> tag in tags)
                 {
-                    tag.Value.WriteToXml(doc);
+                    tag.Value.WriteToXml(ref doc);
                 }
                 doc.Save(CONFIG_FILE_PATH);
                 return true;
-
-            } catch (Exception e)
+            }
+            catch (Exception e)
             {
                 Console.WriteLine(e.Message);
                 return false;
-            }*/
-            return true;
+            }
         }
 
+        private static void CreateNewXmlFile()  // ovo ne radi ne znam kako
+        {
+            Console.WriteLine("Usao ovde");
+            XmlDocument newDoc = new XmlDocument();
+            newDoc.LoadXml("<root></root>");
+            XmlTextWriter writer = new XmlTextWriter(CONFIG_FILE_PATH, null);
+            writer.Formatting = Formatting.Indented;
+            newDoc.Save(CONFIG_FILE_PATH);
+        }
 
+        
         public bool RemoveTag(string token, string tagName)
         {
             if (!IsUserAuthenticated(token)) return false;
@@ -262,7 +305,7 @@ namespace CoreWCFService
             if (!IsUserAuthenticated(token)) return false;
             try
             {
-                ((InputTag)tags[tagName]).ScanOnOff = false;        // da li je ovo okej?
+                ((InputTag)tags[tagName]).ScanOnOff = false;
                 if (WriteXmlConfig())
                 {
                     Console.WriteLine("Scan turned OFF for tag: " + tagName);
@@ -282,7 +325,7 @@ namespace CoreWCFService
             if (!IsUserAuthenticated(token)) return false;
             try
             {
-                ((InputTag)tags[tagName]).ScanOnOff = true;        // da li je ovo okej?
+                ((InputTag)tags[tagName]).ScanOnOff = true;
                 if (WriteXmlConfig())
                 {
                     Console.WriteLine("Scan turned ON for tag: " + tagName);
@@ -322,8 +365,9 @@ namespace CoreWCFService
                     if (scan) retStr += String.Format("{0,-11}|", ((InputTag)tag.Value).ScanOnOff);
 
                     retStr += "\n";
+                    retStr += "------------------------------------------------------------------------------------------------------------------\n";
+
                 }
-                retStr += "------------------------------------------------------------------------------------------------------------------\n";
             }
             retStr += "==================================================================================================================";
 

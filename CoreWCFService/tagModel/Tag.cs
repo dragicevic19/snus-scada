@@ -26,6 +26,24 @@ namespace CoreWCFService.TagModel
         {
         }
 
-        public abstract void WriteToXml(XDocument doc);
+        public abstract void WriteToXml(ref XDocument doc);
+
+        public static Tag MakeTagFromConfigFile(XElement t)
+        {
+            string type = (string)t.Attribute("type");
+            switch (type)
+            {
+                case "AnalogInput":
+                    return AnalogInput.MakeTagFromConfigFile(t);
+                case "AnalogOutput":
+                    return AnalogOutput.MakeTagFromConfigFile(t);
+                case "DigitalInput":
+                    return DigitalInput.MakeTagFromConfigFile(t);
+                case "DigitalOutput":
+                    return DigitalOutput.MakeTagFromConfigFile(t);
+                default:
+                    return null;
+            }
+        }
     }
 }
