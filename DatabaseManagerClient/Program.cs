@@ -7,17 +7,17 @@ using DatabaseManagerClient.ServiceReference;
 
 namespace DatabaseManagerClient
 {
-    class Program
+    public class Program
     {
+
         static void Main(string[] args)
         {
             DatabaseManagerServiceClient proxy = new DatabaseManagerServiceClient();
-            // napravi meni
-            while (true)
-            {
+            AuthenticationClient authProxy = new AuthenticationClient();
+            TagsView tagView = new TagsView(proxy, authProxy);
 
-            }
-
+            RegistrationAndLoginView.GetInstance(proxy, authProxy, tagView).Start();
+            
 
         }
     }

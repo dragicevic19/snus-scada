@@ -6,29 +6,47 @@
       <xsd:import namespace="http://schemas.microsoft.com/2003/10/Serialization/" />
     </xsd:schema>
   </wsdl:types>
-  <wsdl:message name="IDatabaseManagerService_RegisterUser_InputMessage">
-    <wsdl:part name="parameters" element="tns:RegisterUser" />
+  <wsdl:message name="IAuthentication_Registration_InputMessage">
+    <wsdl:part name="parameters" element="tns:Registration" />
   </wsdl:message>
-  <wsdl:message name="IDatabaseManagerService_RegisterUser_OutputMessage">
-    <wsdl:part name="parameters" element="tns:RegisterUserResponse" />
+  <wsdl:message name="IAuthentication_Registration_OutputMessage">
+    <wsdl:part name="parameters" element="tns:RegistrationResponse" />
   </wsdl:message>
-  <wsdl:message name="IDatabaseManagerService_Login_InputMessage">
+  <wsdl:message name="IAuthentication_Login_InputMessage">
     <wsdl:part name="parameters" element="tns:Login" />
   </wsdl:message>
-  <wsdl:message name="IDatabaseManagerService_Login_OutputMessage">
+  <wsdl:message name="IAuthentication_Login_OutputMessage">
     <wsdl:part name="parameters" element="tns:LoginResponse" />
   </wsdl:message>
-  <wsdl:message name="IDatabaseManagerService_Logout_InputMessage">
+  <wsdl:message name="IAuthentication_Logout_InputMessage">
     <wsdl:part name="parameters" element="tns:Logout" />
   </wsdl:message>
-  <wsdl:message name="IDatabaseManagerService_Logout_OutputMessage">
+  <wsdl:message name="IAuthentication_Logout_OutputMessage">
     <wsdl:part name="parameters" element="tns:LogoutResponse" />
   </wsdl:message>
-  <wsdl:message name="IDatabaseManagerService_AddTag_InputMessage">
-    <wsdl:part name="parameters" element="tns:AddTag" />
+  <wsdl:message name="IDatabaseManagerService_AddDigitalInputTag_InputMessage">
+    <wsdl:part name="parameters" element="tns:AddDigitalInputTag" />
   </wsdl:message>
-  <wsdl:message name="IDatabaseManagerService_AddTag_OutputMessage">
-    <wsdl:part name="parameters" element="tns:AddTagResponse" />
+  <wsdl:message name="IDatabaseManagerService_AddDigitalInputTag_OutputMessage">
+    <wsdl:part name="parameters" element="tns:AddDigitalInputTagResponse" />
+  </wsdl:message>
+  <wsdl:message name="IDatabaseManagerService_AddDigitalOutputTag_InputMessage">
+    <wsdl:part name="parameters" element="tns:AddDigitalOutputTag" />
+  </wsdl:message>
+  <wsdl:message name="IDatabaseManagerService_AddDigitalOutputTag_OutputMessage">
+    <wsdl:part name="parameters" element="tns:AddDigitalOutputTagResponse" />
+  </wsdl:message>
+  <wsdl:message name="IDatabaseManagerService_AddAnalogInputTag_InputMessage">
+    <wsdl:part name="parameters" element="tns:AddAnalogInputTag" />
+  </wsdl:message>
+  <wsdl:message name="IDatabaseManagerService_AddAnalogInputTag_OutputMessage">
+    <wsdl:part name="parameters" element="tns:AddAnalogInputTagResponse" />
+  </wsdl:message>
+  <wsdl:message name="IDatabaseManagerService_AddAnalogOutputTag_InputMessage">
+    <wsdl:part name="parameters" element="tns:AddAnalogOutputTag" />
+  </wsdl:message>
+  <wsdl:message name="IDatabaseManagerService_AddAnalogOutputTag_OutputMessage">
+    <wsdl:part name="parameters" element="tns:AddAnalogOutputTagResponse" />
   </wsdl:message>
   <wsdl:message name="IDatabaseManagerService_RemoveTag_InputMessage">
     <wsdl:part name="parameters" element="tns:RemoveTag" />
@@ -60,22 +78,42 @@
   <wsdl:message name="IDatabaseManagerService_TurnScanOff_OutputMessage">
     <wsdl:part name="parameters" element="tns:TurnScanOffResponse" />
   </wsdl:message>
-  <wsdl:portType name="IDatabaseManagerService">
-    <wsdl:operation name="RegisterUser">
-      <wsdl:input wsaw:Action="http://tempuri.org/IDatabaseManagerService/RegisterUser" message="tns:IDatabaseManagerService_RegisterUser_InputMessage" />
-      <wsdl:output wsaw:Action="http://tempuri.org/IDatabaseManagerService/RegisterUserResponse" message="tns:IDatabaseManagerService_RegisterUser_OutputMessage" />
+  <wsdl:message name="IDatabaseManagerService_GetStringForPrintingTags_InputMessage">
+    <wsdl:part name="parameters" element="tns:GetStringForPrintingTags" />
+  </wsdl:message>
+  <wsdl:message name="IDatabaseManagerService_GetStringForPrintingTags_OutputMessage">
+    <wsdl:part name="parameters" element="tns:GetStringForPrintingTagsResponse" />
+  </wsdl:message>
+  <wsdl:portType name="IAuthentication">
+    <wsdl:operation name="Registration">
+      <wsdl:input wsaw:Action="http://tempuri.org/IAuthentication/Registration" message="tns:IAuthentication_Registration_InputMessage" />
+      <wsdl:output wsaw:Action="http://tempuri.org/IAuthentication/RegistrationResponse" message="tns:IAuthentication_Registration_OutputMessage" />
     </wsdl:operation>
     <wsdl:operation name="Login">
-      <wsdl:input wsaw:Action="http://tempuri.org/IDatabaseManagerService/Login" message="tns:IDatabaseManagerService_Login_InputMessage" />
-      <wsdl:output wsaw:Action="http://tempuri.org/IDatabaseManagerService/LoginResponse" message="tns:IDatabaseManagerService_Login_OutputMessage" />
+      <wsdl:input wsaw:Action="http://tempuri.org/IAuthentication/Login" message="tns:IAuthentication_Login_InputMessage" />
+      <wsdl:output wsaw:Action="http://tempuri.org/IAuthentication/LoginResponse" message="tns:IAuthentication_Login_OutputMessage" />
     </wsdl:operation>
     <wsdl:operation name="Logout">
-      <wsdl:input wsaw:Action="http://tempuri.org/IDatabaseManagerService/Logout" message="tns:IDatabaseManagerService_Logout_InputMessage" />
-      <wsdl:output wsaw:Action="http://tempuri.org/IDatabaseManagerService/LogoutResponse" message="tns:IDatabaseManagerService_Logout_OutputMessage" />
+      <wsdl:input wsaw:Action="http://tempuri.org/IAuthentication/Logout" message="tns:IAuthentication_Logout_InputMessage" />
+      <wsdl:output wsaw:Action="http://tempuri.org/IAuthentication/LogoutResponse" message="tns:IAuthentication_Logout_OutputMessage" />
     </wsdl:operation>
-    <wsdl:operation name="AddTag">
-      <wsdl:input wsaw:Action="http://tempuri.org/IDatabaseManagerService/AddTag" message="tns:IDatabaseManagerService_AddTag_InputMessage" />
-      <wsdl:output wsaw:Action="http://tempuri.org/IDatabaseManagerService/AddTagResponse" message="tns:IDatabaseManagerService_AddTag_OutputMessage" />
+  </wsdl:portType>
+  <wsdl:portType name="IDatabaseManagerService">
+    <wsdl:operation name="AddDigitalInputTag">
+      <wsdl:input wsaw:Action="http://tempuri.org/IDatabaseManagerService/AddDigitalInputTag" message="tns:IDatabaseManagerService_AddDigitalInputTag_InputMessage" />
+      <wsdl:output wsaw:Action="http://tempuri.org/IDatabaseManagerService/AddDigitalInputTagResponse" message="tns:IDatabaseManagerService_AddDigitalInputTag_OutputMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="AddDigitalOutputTag">
+      <wsdl:input wsaw:Action="http://tempuri.org/IDatabaseManagerService/AddDigitalOutputTag" message="tns:IDatabaseManagerService_AddDigitalOutputTag_InputMessage" />
+      <wsdl:output wsaw:Action="http://tempuri.org/IDatabaseManagerService/AddDigitalOutputTagResponse" message="tns:IDatabaseManagerService_AddDigitalOutputTag_OutputMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="AddAnalogInputTag">
+      <wsdl:input wsaw:Action="http://tempuri.org/IDatabaseManagerService/AddAnalogInputTag" message="tns:IDatabaseManagerService_AddAnalogInputTag_InputMessage" />
+      <wsdl:output wsaw:Action="http://tempuri.org/IDatabaseManagerService/AddAnalogInputTagResponse" message="tns:IDatabaseManagerService_AddAnalogInputTag_OutputMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="AddAnalogOutputTag">
+      <wsdl:input wsaw:Action="http://tempuri.org/IDatabaseManagerService/AddAnalogOutputTag" message="tns:IDatabaseManagerService_AddAnalogOutputTag_InputMessage" />
+      <wsdl:output wsaw:Action="http://tempuri.org/IDatabaseManagerService/AddAnalogOutputTagResponse" message="tns:IDatabaseManagerService_AddAnalogOutputTag_OutputMessage" />
     </wsdl:operation>
     <wsdl:operation name="RemoveTag">
       <wsdl:input wsaw:Action="http://tempuri.org/IDatabaseManagerService/RemoveTag" message="tns:IDatabaseManagerService_RemoveTag_InputMessage" />
@@ -97,11 +135,15 @@
       <wsdl:input wsaw:Action="http://tempuri.org/IDatabaseManagerService/TurnScanOff" message="tns:IDatabaseManagerService_TurnScanOff_InputMessage" />
       <wsdl:output wsaw:Action="http://tempuri.org/IDatabaseManagerService/TurnScanOffResponse" message="tns:IDatabaseManagerService_TurnScanOff_OutputMessage" />
     </wsdl:operation>
+    <wsdl:operation name="GetStringForPrintingTags">
+      <wsdl:input wsaw:Action="http://tempuri.org/IDatabaseManagerService/GetStringForPrintingTags" message="tns:IDatabaseManagerService_GetStringForPrintingTags_InputMessage" />
+      <wsdl:output wsaw:Action="http://tempuri.org/IDatabaseManagerService/GetStringForPrintingTagsResponse" message="tns:IDatabaseManagerService_GetStringForPrintingTags_OutputMessage" />
+    </wsdl:operation>
   </wsdl:portType>
-  <wsdl:binding name="BasicHttpBinding_IDatabaseManagerService" type="tns:IDatabaseManagerService">
+  <wsdl:binding name="BasicHttpBinding_IAuthentication" type="tns:IAuthentication">
     <soap:binding transport="http://schemas.xmlsoap.org/soap/http" />
-    <wsdl:operation name="RegisterUser">
-      <soap:operation soapAction="http://tempuri.org/IDatabaseManagerService/RegisterUser" style="document" />
+    <wsdl:operation name="Registration">
+      <soap:operation soapAction="http://tempuri.org/IAuthentication/Registration" style="document" />
       <wsdl:input>
         <soap:body use="literal" />
       </wsdl:input>
@@ -110,7 +152,7 @@
       </wsdl:output>
     </wsdl:operation>
     <wsdl:operation name="Login">
-      <soap:operation soapAction="http://tempuri.org/IDatabaseManagerService/Login" style="document" />
+      <soap:operation soapAction="http://tempuri.org/IAuthentication/Login" style="document" />
       <wsdl:input>
         <soap:body use="literal" />
       </wsdl:input>
@@ -119,7 +161,7 @@
       </wsdl:output>
     </wsdl:operation>
     <wsdl:operation name="Logout">
-      <soap:operation soapAction="http://tempuri.org/IDatabaseManagerService/Logout" style="document" />
+      <soap:operation soapAction="http://tempuri.org/IAuthentication/Logout" style="document" />
       <wsdl:input>
         <soap:body use="literal" />
       </wsdl:input>
@@ -127,8 +169,38 @@
         <soap:body use="literal" />
       </wsdl:output>
     </wsdl:operation>
-    <wsdl:operation name="AddTag">
-      <soap:operation soapAction="http://tempuri.org/IDatabaseManagerService/AddTag" style="document" />
+  </wsdl:binding>
+  <wsdl:binding name="BasicHttpBinding_IDatabaseManagerService" type="tns:IDatabaseManagerService">
+    <soap:binding transport="http://schemas.xmlsoap.org/soap/http" />
+    <wsdl:operation name="AddDigitalInputTag">
+      <soap:operation soapAction="http://tempuri.org/IDatabaseManagerService/AddDigitalInputTag" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="AddDigitalOutputTag">
+      <soap:operation soapAction="http://tempuri.org/IDatabaseManagerService/AddDigitalOutputTag" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="AddAnalogInputTag">
+      <soap:operation soapAction="http://tempuri.org/IDatabaseManagerService/AddAnalogInputTag" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="AddAnalogOutputTag">
+      <soap:operation soapAction="http://tempuri.org/IDatabaseManagerService/AddAnalogOutputTag" style="document" />
       <wsdl:input>
         <soap:body use="literal" />
       </wsdl:input>
@@ -181,8 +253,20 @@
         <soap:body use="literal" />
       </wsdl:output>
     </wsdl:operation>
+    <wsdl:operation name="GetStringForPrintingTags">
+      <soap:operation soapAction="http://tempuri.org/IDatabaseManagerService/GetStringForPrintingTags" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
   </wsdl:binding>
   <wsdl:service name="DatabaseManagerService">
+    <wsdl:port name="BasicHttpBinding_IAuthentication" binding="tns:BasicHttpBinding_IAuthentication">
+      <soap:address location="http://localhost:8000/Authentication" />
+    </wsdl:port>
     <wsdl:port name="BasicHttpBinding_IDatabaseManagerService" binding="tns:BasicHttpBinding_IDatabaseManagerService">
       <soap:address location="http://localhost:8000/DatabaseManager" />
     </wsdl:port>

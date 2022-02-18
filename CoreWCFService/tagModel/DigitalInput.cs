@@ -3,17 +3,25 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Xml.Linq;
+using CoreWCFService.TagModel;
 
 namespace CoreWCFService
 {
-    public class DigitalInput : IDigitalTag, IInputTag
+    public class DigitalInput : InputTag
     {
-        public string Name { get; set; }
-        public string Description { get; set; }
-        public string IOAddress { get; set; }
-        public string Driver { get; set; }
-        public double ScanTime { get; set; }
-        public bool OnOffScan { get; set; }
-    
+        public DigitalInput()
+        {
+        }
+
+        public DigitalInput(string name, string description, string iOAddress, string driver,
+            double scanTime, bool scanOnOff) : base(name, description, iOAddress, driver, scanTime, scanOnOff)
+        {
+        }
+
+        public override void WriteToXml(XDocument doc)
+        {
+
+        }
     }
 }

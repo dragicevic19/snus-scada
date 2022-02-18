@@ -10,34 +10,36 @@ namespace CoreWCFService
     [ServiceContract]
     public interface IDatabaseManagerService
     {
-        [OperationContract]
-        void RegisterUser();
 
         [OperationContract]
-        void Login();
+        bool AddDigitalInputTag(string token, string name, string description, string driver, string ioAddress, double scanTime, bool scanOnOff);
 
         [OperationContract]
-        void Logout();
+        bool AddDigitalOutputTag(string token, string name, string description, string ioAddress, double initValue);
+
+        [OperationContract] // ovde nisam stavio alarme!!!!
+        bool AddAnalogInputTag(string token, string name, string description, string driver, string ioAddress, double scanTime, bool scanOnOff, double lowLimit, double highLimit, string units);
 
         [OperationContract]
-        void AddTag();
+        bool AddAnalogOutputTag(string token, string name, string description, string ioAddress, double initValue, double lowLimit, double highLimit, string units);
 
         [OperationContract]
-        void RemoveTag();
+        bool RemoveTag(string token, string tagName);
 
         [OperationContract]
-        void ChangeOutputValue();
+        bool ChangeOutputValue(string token, string tagName, double value);
 
         [OperationContract]
-        double GetOutputValue();
+        double GetOutputValue(string token, string tagName);
 
         [OperationContract]
-        bool TurnScanOn();
+        bool TurnScanOn(string token, string tagName);
 
         [OperationContract]
-        bool TurnScanOff();
+        bool TurnScanOff(string token, string tagName);
 
-
+        [OperationContract]
+        string GetStringForPrintingTags(string token, string type="", bool value=false, bool scan=false);
 
     }
 }

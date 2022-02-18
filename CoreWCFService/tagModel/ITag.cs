@@ -3,14 +3,13 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Xml.Linq;
+using CoreWCFService.TagModel;
 
 namespace CoreWCFService
 {
     public interface ITag
     {
-        string Name { get; set; }
-        string Description { get; set; }
-        string IOAddress { get; set; }
-
+        void WriteToXml(XDocument doc);
     }
 }

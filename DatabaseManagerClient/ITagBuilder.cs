@@ -4,10 +4,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace CoreWCFService
+namespace DatabaseManagerClient
 {
-    public interface IDigitalTag : ITag
+    public interface ITagBuilder
     {
-        // za sada nema nista
+        void Build();
     }
 }

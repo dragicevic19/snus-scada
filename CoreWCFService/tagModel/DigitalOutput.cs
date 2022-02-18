@@ -3,14 +3,24 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Xml.Linq;
+using CoreWCFService.TagModel;
 
 namespace CoreWCFService
 {
-    public class DigitalOutput : IDigitalTag, IOutputTag
+    public class DigitalOutput : OutputTag
     {
-        public string Name { get; set ; }
-        public string Description { get; set; }
-        public string IOAddress { get; set; }
-        public double InitValue { get; set; }
+        public DigitalOutput(string name, string description, string iOAddress, double initValue) : base(name, description, iOAddress, initValue)
+        {
+        }
+
+        public DigitalOutput()
+        {
+        }
+
+        public override void WriteToXml(XDocument doc)
+        {
+
+        }
     }
 }

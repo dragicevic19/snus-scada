@@ -45,13 +45,23 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AnalogInputBuilder.cs" />
+    <Compile Include="AnalogOutputBuilder.cs" />
     <Compile Include="Connected Services\ServiceReference\Reference.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
       <DependentUpon>Reference.svcmap</DependentUpon>
     </Compile>
+    <Compile Include="DigitalInputBuilder.cs" />
+    <Compile Include="DigitalOutputBuilder.cs" />
+    <Compile Include="InputTagBuilder.cs" />
+    <Compile Include="OutputTagBuilder.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="RegistrationAndLoginView.cs" />
+    <Compile Include="ITagBuilder.cs" />
+    <Compile Include="TagBuilder.cs" />
+    <Compile Include="TagsView.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
