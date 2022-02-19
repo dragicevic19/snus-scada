@@ -48,6 +48,8 @@ namespace CoreWCFService
 
         public override void Start(TagProcessing.AlarmHandler alarmOccured, TagProcessing.ValueHandler valueChanged)
         {
+            Console.WriteLine("STARTED DIGITAL " + Name);
+
             while (true)
             {
                 if (ScanOnOff)

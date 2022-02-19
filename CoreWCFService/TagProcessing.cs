@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading;
@@ -13,8 +14,11 @@ namespace CoreWCFService
 {
     public class TagProcessing
     {
-        private static Dictionary<string, Tag> tags = new Dictionary<string, Tag>();    // key is TagName
         const string CONFIG_FILE_PATH = @"../../data/scadaConfig.xml";
+        const string ALARM_TXT_PATH = @"../../data/alarmLog.txt";
+
+        private static Dictionary<string, Tag> tags = new Dictionary<string, Tag>();    // key is TagName
+        private static List<Alarm> alarms = new List<Alarm>();
 
         public delegate void AlarmHandler(Alarm alarm);
         public delegate void ValueHandler(Tag tag);
@@ -24,18 +28,43 @@ namespace CoreWCFService
 
         public TagProcessing()
         {
+            Console.WriteLine("CONSTRUCTOR");
             AlarmOccured += OnAlarmOccured; // ovde ili u nekim metodama koje ce pozivati Trending i AlarmDisplay servisi?
             ValueChanged += OnValueChanged;
         }
 
+        public void StartInputTags()
+        {
+            /*foreach(KeyValuePair<string, Tag> tagMap in tags)
+            {
+                if (tagMap.Value is AnalogInput)
+                {
+                    Thread th = new Thread (() => ((AnalogInput)tagMap.Value).Start(AlarmOccured, ValueChanged));
+                    th.Start();
+                }
+                else if (tagMap.Value is DigitalInput)
+                {
+                    Thread thh = new Thread(() => ((DigitalInput)tagMap.Value).Start(AlarmOccured, ValueChanged));
+                    thh.Start();
+                }
+            }*/         // ne znam sta se desava
+        }
+
         internal void OnAlarmOccured(Alarm alarm)
         {
-            // callbackproxy.AlarmOccured(mozda str?)
+            AddAlarmToDatabase(alarm);
+            AddAlarmToTxt(alarm);
+            Console.WriteLine("ALARM OCCURED: " + alarm.TagName + " limit: " + alarm.Limit);
+            // dodaj callback za alarmdisplay
         }
+
 
         internal void OnValueChanged(Tag tag)
         {
-
+            AddTagToDatabase(tag);
+            Console.WriteLine("VALUE CHANGED: " + tag.Name + ", value: " + tag.Value);
+            // plus callback
+            // dodaj callback za trending
         }
 
         #region tags
@@ -134,15 +163,56 @@ namespace CoreWCFService
             try
             {
                 AnalogInput ai = (AnalogInput)tags[name];
-                Alarm alarm = new Alarm((AlarmType)Enum.Parse(typeof(AlarmType), type), priority, limit, name);
+                int id = FindNewAlarmId();
+                Alarm alarm = new Alarm(id, (AlarmType)Enum.Parse(typeof(AlarmType), type), priority, limit, name);
                 ai.Alarms.Add(alarm);
-                if (WriteXmlConfig() && AddAlarmToDatabase(alarm))
+                alarms.Add(alarm);
+                if (WriteXmlConfig())
                 {
                     Console.WriteLine("New alarm added for tag: " + name);
                     return true;
                 }
                 else return false;
 
+            } catch (Exception e)
+            {
+                Console.WriteLine(e.Message);
+                return false;
+            }
+        }
+
+        private int FindNewAlarmId()
+        {
+            int newId = 0;
+
+            foreach(Alarm a in alarms)
+            {
+                if (a.Id > newId)
+                    newId = a.Id;
+            }
+
+            return ++newId;
+        }
+
+        internal bool RemoveAlarm(int id)
+        {
+            try
+            {
+                foreach (Alarm alarm in alarms)
+                {
+                    if (alarm.Id == id)
+                    {
+                        ((AnalogInput)tags[alarm.TagName]).Alarms.Remove(alarm);
+                        
+                        if (alarms.Remove(alarm) && WriteXmlConfig())
+                        {
+                            Console.WriteLine("Alarm deleted!");
+                            return true;
+                        }
+                        else return false;
+                    }
+                }
+                return false;
             } catch (Exception e)
             {
                 Console.WriteLine(e.Message);
@@ -161,7 +231,6 @@ namespace CoreWCFService
                     return true;
                 }
                 else return false;
-
             }
             catch (Exception e)
             {
@@ -245,7 +314,7 @@ namespace CoreWCFService
 
         #endregion
 
-        #region console_print_tags
+        #region console_prints
         internal string PrintTags(string ioType, string adType, bool value, bool scan)
         {
             string retStr = "==================================================================================================================\n";
@@ -276,6 +345,26 @@ namespace CoreWCFService
                 }
             }
             retStr += "==================================================================================================================";
+
+            return retStr;
+        }
+
+        internal string PrintAlarmsForTag(string tagName)
+        {
+            string retStr = "===================================================\n";
+            retStr +=       "|ID|      TAG NAME      | TYPE | PRIORITY | LIMIT |";
+            retStr +=     "\n---------------------------------------------------\n";
+
+            foreach (Alarm alarm in alarms)
+            {
+                if (alarm.TagName == tagName)
+                {                                                                                                           
+                    retStr += String.Format("|{0,-2}|{1,-20}|{2,-6}|{3,-10}|{4,7}|", alarm.Id, alarm.TagName, alarm.Type, alarm.Priority, alarm.Limit);
+                    retStr += "\n";
+                    retStr += "---------------------------------------------------\n";
+                }
+            }
+            retStr += "===================================================\n";
 
             return retStr;
         }
@@ -329,6 +418,7 @@ namespace CoreWCFService
             {
                 Alarm alarm = Alarm.MakeAlarmFromConfigFile(a);
                 ((AnalogInput)tags[alarm.TagName]).Alarms.Add(alarm);
+                alarms.Add(alarm);
             }
         }
 
@@ -397,6 +487,19 @@ namespace CoreWCFService
                     Console.WriteLine(e.Message);
                     return false;
                 }
+            }
+        }
+
+        private void AddAlarmToTxt(Alarm alarm)
+        {
+            try
+            {
+                string stringToWrite = "";
+                File.AppendAllText(ALARM_TXT_PATH, alarm.Id + "|" + alarm.TagName + "|" + alarm.Type + "|" + DateTime.Now + Environment.NewLine);
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e.Message);
             }
         }
         #endregion

@@ -18,6 +18,7 @@ namespace CoreWCFService
     {
         TagProcessing TagProcessing = new TagProcessing();
         // UserProcessing UserProcessing = new UserProcessing();
+
         public static void LoadScadaConfig()
         {
             TagProcessing.LoadScadaConfig();
@@ -114,6 +115,22 @@ namespace CoreWCFService
             if (!UserProcessing.IsUserAuthenticated(token)) return false;
 
             return TagProcessing.AddAlarm(name, type, priority, limit);
+        }
+
+        public bool RemoveAlarm(string token, int id)
+        {
+            if (!UserProcessing.IsUserAuthenticated(token)) return false;
+
+            return TagProcessing.RemoveAlarm(id);
+
+        }
+
+        public string PrintAlarmsForTag(string token, string tagName)
+        {
+            if (!UserProcessing.IsUserAuthenticated(token)) return "Wrong authentication token";
+
+            return TagProcessing.PrintAlarmsForTag(tagName);
+
         }
     }
 }

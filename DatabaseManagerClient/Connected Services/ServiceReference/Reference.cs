@@ -120,6 +120,18 @@ namespace DatabaseManagerClient.ServiceReference {
         [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IDatabaseManagerService/AddAlarm", ReplyAction="http://tempuri.org/IDatabaseManagerService/AddAlarmResponse")]
         System.Threading.Tasks.Task<bool> AddAlarmAsync(string token, string name, string type, int priority, double limit);
         
+        [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IDatabaseManagerService/RemoveAlarm", ReplyAction="http://tempuri.org/IDatabaseManagerService/RemoveAlarmResponse")]
+        bool RemoveAlarm(string token, int id);
+        
+        [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IDatabaseManagerService/RemoveAlarm", ReplyAction="http://tempuri.org/IDatabaseManagerService/RemoveAlarmResponse")]
+        System.Threading.Tasks.Task<bool> RemoveAlarmAsync(string token, int id);
+        
+        [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IDatabaseManagerService/PrintAlarmsForTag", ReplyAction="http://tempuri.org/IDatabaseManagerService/PrintAlarmsForTagResponse")]
+        string PrintAlarmsForTag(string token, string tagName);
+        
+        [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IDatabaseManagerService/PrintAlarmsForTag", ReplyAction="http://tempuri.org/IDatabaseManagerService/PrintAlarmsForTagResponse")]
+        System.Threading.Tasks.Task<string> PrintAlarmsForTagAsync(string token, string tagName);
+        
         [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IDatabaseManagerService/RemoveTag", ReplyAction="http://tempuri.org/IDatabaseManagerService/RemoveTagResponse")]
         bool RemoveTag(string token, string tagName);
         
@@ -222,6 +234,22 @@ namespace DatabaseManagerClient.ServiceReference {
         
         public System.Threading.Tasks.Task<bool> AddAlarmAsync(string token, string name, string type, int priority, double limit) {
             return base.Channel.AddAlarmAsync(token, name, type, priority, limit);
+        }
+        
+        public bool RemoveAlarm(string token, int id) {
+            return base.Channel.RemoveAlarm(token, id);
+        }
+        
+        public System.Threading.Tasks.Task<bool> RemoveAlarmAsync(string token, int id) {
+            return base.Channel.RemoveAlarmAsync(token, id);
+        }
+        
+        public string PrintAlarmsForTag(string token, string tagName) {
+            return base.Channel.PrintAlarmsForTag(token, tagName);
+        }
+        
+        public System.Threading.Tasks.Task<string> PrintAlarmsForTagAsync(string token, string tagName) {
+            return base.Channel.PrintAlarmsForTagAsync(token, tagName);
         }
         
         public bool RemoveTag(string token, string tagName) {

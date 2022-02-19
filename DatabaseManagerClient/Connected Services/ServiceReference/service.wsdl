@@ -54,6 +54,18 @@
   <wsdl:message name="IDatabaseManagerService_AddAlarm_OutputMessage">
     <wsdl:part name="parameters" element="tns:AddAlarmResponse" />
   </wsdl:message>
+  <wsdl:message name="IDatabaseManagerService_RemoveAlarm_InputMessage">
+    <wsdl:part name="parameters" element="tns:RemoveAlarm" />
+  </wsdl:message>
+  <wsdl:message name="IDatabaseManagerService_RemoveAlarm_OutputMessage">
+    <wsdl:part name="parameters" element="tns:RemoveAlarmResponse" />
+  </wsdl:message>
+  <wsdl:message name="IDatabaseManagerService_PrintAlarmsForTag_InputMessage">
+    <wsdl:part name="parameters" element="tns:PrintAlarmsForTag" />
+  </wsdl:message>
+  <wsdl:message name="IDatabaseManagerService_PrintAlarmsForTag_OutputMessage">
+    <wsdl:part name="parameters" element="tns:PrintAlarmsForTagResponse" />
+  </wsdl:message>
   <wsdl:message name="IDatabaseManagerService_RemoveTag_InputMessage">
     <wsdl:part name="parameters" element="tns:RemoveTag" />
   </wsdl:message>
@@ -124,6 +136,14 @@
     <wsdl:operation name="AddAlarm">
       <wsdl:input wsaw:Action="http://tempuri.org/IDatabaseManagerService/AddAlarm" message="tns:IDatabaseManagerService_AddAlarm_InputMessage" />
       <wsdl:output wsaw:Action="http://tempuri.org/IDatabaseManagerService/AddAlarmResponse" message="tns:IDatabaseManagerService_AddAlarm_OutputMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="RemoveAlarm">
+      <wsdl:input wsaw:Action="http://tempuri.org/IDatabaseManagerService/RemoveAlarm" message="tns:IDatabaseManagerService_RemoveAlarm_InputMessage" />
+      <wsdl:output wsaw:Action="http://tempuri.org/IDatabaseManagerService/RemoveAlarmResponse" message="tns:IDatabaseManagerService_RemoveAlarm_OutputMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="PrintAlarmsForTag">
+      <wsdl:input wsaw:Action="http://tempuri.org/IDatabaseManagerService/PrintAlarmsForTag" message="tns:IDatabaseManagerService_PrintAlarmsForTag_InputMessage" />
+      <wsdl:output wsaw:Action="http://tempuri.org/IDatabaseManagerService/PrintAlarmsForTagResponse" message="tns:IDatabaseManagerService_PrintAlarmsForTag_OutputMessage" />
     </wsdl:operation>
     <wsdl:operation name="RemoveTag">
       <wsdl:input wsaw:Action="http://tempuri.org/IDatabaseManagerService/RemoveTag" message="tns:IDatabaseManagerService_RemoveTag_InputMessage" />
@@ -220,6 +240,24 @@
     </wsdl:operation>
     <wsdl:operation name="AddAlarm">
       <soap:operation soapAction="http://tempuri.org/IDatabaseManagerService/AddAlarm" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="RemoveAlarm">
+      <soap:operation soapAction="http://tempuri.org/IDatabaseManagerService/RemoveAlarm" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="PrintAlarmsForTag">
+      <soap:operation soapAction="http://tempuri.org/IDatabaseManagerService/PrintAlarmsForTag" style="document" />
       <wsdl:input>
         <soap:body use="literal" />
       </wsdl:input>

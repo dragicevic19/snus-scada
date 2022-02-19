@@ -24,11 +24,11 @@ namespace DatabaseManagerClient
             {
                 System.Console.Clear();
 
-                Console.WriteLine("\n1 - Add ANALOG tag\n2 - Add DIGITAL tag\n3 - Add alarm\n4 - Remove tag\n5 - Change output value\n6 - Show values of output tags" +
-                    "\n7 - Turn scan on\n8 - Turn scan off\n9 - Log out\n");
+                Console.WriteLine("\n1 - Add ANALOG tag\n2 - Add DIGITAL tag\n3 - Add alarm\n4 - Remove alarm\n5 - Remove tag\n6 - Change output value\n7 - Show values of output tags" +
+                    "\n8 - Turn scan on\n9 - Turn scan off\nx- Log out\n");
                 Console.Write(">> ");
                 string input = Console.ReadLine();
-                switch (input)
+                switch (input.ToLower())
                 {
                     case "1":
                         AddAnalogTag();
@@ -40,21 +40,24 @@ namespace DatabaseManagerClient
                         AddAlarm();
                         break;
                     case "4":
-                        RemoveTag();
+                        RemoveAlarm();
                         break;
                     case "5":
-                        ChangeOutputValue();
+                        RemoveTag();
                         break;
                     case "6":
-                        ShowValuesOfOutputTags();
+                        ChangeOutputValue();
                         break;
                     case "7":
-                        TurnScanOn();
+                        ShowValuesOfOutputTags();
                         break;
                     case "8":
-                        TurnScanOff();
+                        TurnScanOn();
                         break;
                     case "9":
+                        TurnScanOff();
+                        break;
+                    case "x":
                         if (AuthProxy.Logout(Token))
                         {
                             Console.WriteLine("Successfully logged out");
@@ -75,6 +78,38 @@ namespace DatabaseManagerClient
             }
         }
 
+        private void RemoveAlarm()
+        {
+            Console.Clear();
+            try
+            {
+                Console.WriteLine(Proxy.GetStringForPrintingTags(Token, ioType: "input", adType: "analog", value: false, scan: true));
+                Console.Write("Enter the name of the tag for which you want to remove an alarm: ");
+                string tagName = Console.ReadLine();
+                if (tagName.Length == 0) return;
+
+                Console.Clear();
+                Console.WriteLine(Proxy.PrintAlarmsForTag(Token, tagName));
+                Console.Write("Enter id of the alarm you want to remove: ");
+                string id = Console.ReadLine();
+
+                Console.WriteLine("Removing alarm...");
+
+                if (Proxy.RemoveAlarm(Token, int.Parse(id)))
+                    Console.WriteLine("Alarm removed successfully");
+
+                else
+                    Console.WriteLine("An error occurred while removing the alarm");
+
+                Console.Write("Press any key to continue...");
+                Console.ReadKey();
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e.Message);
+            }
+        }
+
         private void AddAlarm()
         {
             System.Console.Clear();
@@ -90,11 +125,11 @@ namespace DatabaseManagerClient
                     Console.WriteLine("Adding alarm...");
                     if (Proxy.AddAlarm(Token, alarm.TagName, alarm.Type, alarm.Priority, alarm.Limit))
                     {
-                        Console.WriteLine("Analog input tag added successfully");
+                        Console.WriteLine("Alaram added successfully");
                     }
                     else
                     {
-                        Console.WriteLine("An error occurred while adding the tag");
+                        Console.WriteLine("An error occurred while adding the alarm");
                     }
                 }
                 Console.Write("Press any key to continue...");
