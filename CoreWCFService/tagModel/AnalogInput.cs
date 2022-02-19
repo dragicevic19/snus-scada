@@ -11,6 +11,7 @@ namespace CoreWCFService
     public class AnalogInput : InputTag
     {
         const string TYPE = "AnalogInput";
+        public List<Alarm> Alarms { get; set; }
         public double LowLimit { get; set; }
         public double HighLimit { get; set; }
         public string Units { get; set; }

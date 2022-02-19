@@ -1,8 +1,8 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <root>
-  <tag type="AnalogInput" name="analoginputtest" description="input analog test xml test description" driver="Simulation Driver" ioAddress="S" scanTime="1" scanOnOff="false" lowLimit="0" highLimit="100" units="m" />
+  <tag type="AnalogInput" name="analoginputtest" description="input analog test xml test description" driver="Simulation Driver" ioAddress="S" scanTime="1" scanOnOff="true" lowLimit="0" highLimit="100" units="m" />
   <tag type="AnalogOutput" name="anaOutTag" description="analog output tag test test" ioAddress="C" initValue="50" lowLimit="1" highLimit="100" units="s" />
-  <tag type="DigitalInput" name="digitagIn" description="digital input tag op op" driver="Simulation Driver" ioAddress="R" scanTime="5" scanOnOff="true" />
+  <tag type="DigitalInput" name="digitagIn" description="digital input tag op op" driver="Simulation Driver" ioAddress="R" scanTime="5" scanOnOff="false" />
   <tag type="DigitalOutput" name="digiOut" description="digital output ttag for testting" ioAddress="R" initValue="0" />
   <tag type="AnalogInput" name="newAnInput" description="New Analog input tag for testing" driver="Simulation Driver" ioAddress="S" scanTime="2" scanOnOff="false" lowLimit="1" highLimit="100" units="h" />
 </root>

@@ -54,12 +54,15 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AlarmModel\AlarmContext.cs" />
+    <Compile Include="AlarmModel\AlarmDTO.cs" />
     <Compile Include="DataBaseManagerService.cs" />
     <Compile Include="IAuthentication.cs" />
     <Compile Include="IDatabaseManagerService.cs" />
     <Compile Include="ITrendingService.cs" />
     <Compile Include="TagDbModel\TagContext.cs" />
     <Compile Include="TagDbModel\TagDb.cs" />
+    <Compile Include="AlarmModel\Alarm.cs" />
     <Compile Include="TagModel\AnalogInput.cs" />
     <Compile Include="TagModel\AnalogOutput.cs" />
     <Compile Include="TagModel\DigitalInput.cs" />
@@ -70,8 +73,10 @@
     <Compile Include="TagModel\ITag.cs" />
     <Compile Include="TagModel\OutputTag.cs" />
     <Compile Include="TagModel\Tag.cs" />
+    <Compile Include="TagProcessing.cs" />
     <Compile Include="UserModel\User.cs" />
     <Compile Include="UserModel\UserContext.cs" />
+    <Compile Include="UserProcessing.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />

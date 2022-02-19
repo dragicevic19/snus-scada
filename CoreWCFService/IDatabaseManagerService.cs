@@ -17,7 +17,7 @@ namespace CoreWCFService
         [OperationContract]
         bool AddDigitalOutputTag(string token, string name, string description, string ioAddress, double initValue);
 
-        [OperationContract] // ovde nisam stavio alarme!!!!
+        [OperationContract] // ovde nisam stavio alarme
         bool AddAnalogInputTag(string token, string name, string description, string driver, string ioAddress, double scanTime, bool scanOnOff, double lowLimit, double highLimit, string units);
 
         [OperationContract]

@@ -10,6 +10,8 @@ namespace CoreWCFService
     [ServiceContract]
     public interface ITrendingService
     {
+        [OperationContract]
+        void TagValueChanged();
 
     }
 }
