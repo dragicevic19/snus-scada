@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Xml.Linq;
 using CoreWCFService.TagDbModel;
@@ -14,15 +15,39 @@ namespace CoreWCFService
         private static Dictionary<string, Tag> tags = new Dictionary<string, Tag>();    // key is TagName
         const string CONFIG_FILE_PATH = @"../../data/scadaConfig.xml";
 
+        public delegate void AlarmHandler(Alarm alarm);
+        public delegate void ValueHandler(Tag tag);
+
+        public event AlarmHandler AlarmOccured;
+        public event ValueHandler ValueChanged;
+
+        public TagProcessing()
+        {
+            AlarmOccured += OnAlarmOccured; // ovde ili u nekim metodama koje ce pozivati Trending i AlarmDisplay servisi?
+            ValueChanged += OnValueChanged;
+        }
+
+        internal void OnAlarmOccured(Alarm alarm)
+        {
+            // callbackproxy.AlarmOccured(mozda str?)
+        }
+
+        internal void OnValueChanged(Tag tag)
+        {
+
+        }
+
         #region tags
-        internal static bool AddAnalogInputTag(string name, string description, string driver, string ioAddress, double scanTime, bool scanOnOff, double lowLimit, double highLimit, string units)
+        internal bool AddAnalogInputTag(string name, string description, string driver, string ioAddress, int scanTime, bool scanOnOff, double lowLimit, double highLimit, string units)
         {
             try
             {
-                Tag tag = new AnalogInput(name, description, ioAddress, driver, scanTime, scanOnOff, lowLimit, highLimit, units);
+                InputTag tag = new AnalogInput(name, description, ioAddress, driver, scanTime, scanOnOff, lowLimit, highLimit, units);
                 tags.Add(tag.Name, tag);
                 if (AddTagToDatabase(tag) && WriteXmlConfig())
                 {
+                    Thread t = new Thread(() => tag.Start(AlarmOccured, ValueChanged));
+                    t.Start();
                     Console.WriteLine("New tag added: " + name);
                     return true;
                 }
@@ -35,7 +60,8 @@ namespace CoreWCFService
                 return false;
             }
         }
-        internal static bool AddAnalogOutputTag(string name, string description, string ioAddress, double initValue, double lowLimit, double highLimit, string units)
+
+        internal bool AddAnalogOutputTag(string name, string description, string ioAddress, double initValue, double lowLimit, double highLimit, string units)
         {
             try
             {
@@ -56,14 +82,16 @@ namespace CoreWCFService
             }
         }
 
-        internal static bool AddDigitalInputTag(string name, string description, string driver, string ioAddress, double scanTime, bool scanOnOff)
+        internal bool AddDigitalInputTag(string name, string description, string driver, string ioAddress, int scanTime, bool scanOnOff)
         {
             try
             {
-                Tag tag = new DigitalInput(name, description, ioAddress, driver, scanTime, scanOnOff);
+                InputTag tag = new DigitalInput(name, description, ioAddress, driver, scanTime, scanOnOff);
                 tags.Add(tag.Name, tag);
                 if (AddTagToDatabase(tag) && WriteXmlConfig())
                 {
+                    Thread t = new Thread(() => tag.Start(AlarmOccured, ValueChanged));
+                    t.Start();
                     Console.WriteLine("New tag added: " + name);
                     return true;
                 }
@@ -79,7 +107,7 @@ namespace CoreWCFService
             }
         }
 
-        internal static bool AddDigitalOutputTag(string name, string description, string ioAddress, double initValue)
+        internal bool AddDigitalOutputTag(string name, string description, string ioAddress, double initValue)
         {
             try
             {
@@ -100,7 +128,7 @@ namespace CoreWCFService
             }
         }
 
-        internal static bool RemoveTag(string tagName)
+        internal bool RemoveTag(string tagName)
         {
             try
             {
@@ -119,7 +147,7 @@ namespace CoreWCFService
             }
         }
 
-        internal static bool TurnScanOn(string tagName)
+        internal bool TurnScanOn(string tagName)
         {
             try
             {
@@ -138,7 +166,7 @@ namespace CoreWCFService
             }
         }
 
-        internal static bool TurnScanOff(string tagName)
+        internal bool TurnScanOff(string tagName)
         {
             try
             {
@@ -158,7 +186,7 @@ namespace CoreWCFService
             }
         }
 
-        internal static double GetOutputValue(string tagName)
+        internal double GetOutputValue(string tagName)
         {
             try
             {
@@ -172,7 +200,7 @@ namespace CoreWCFService
             }
         }
 
-        internal static bool ChangeOutputValue(string tagName, double value)
+        internal bool ChangeOutputValue(string tagName, double value)
         {
             try
             {
@@ -195,7 +223,7 @@ namespace CoreWCFService
         #endregion
 
         #region console_print_tags
-        internal static string PrintTags(string type, bool value, bool scan)
+        internal string PrintTags(string type, bool value, bool scan)
         {
             string retStr = "==================================================================================================================\n";
 
@@ -230,7 +258,7 @@ namespace CoreWCFService
         #endregion
 
         #region write_config
-        private static bool WriteXmlConfig()
+        private bool WriteXmlConfig()
         {
             try
             {
@@ -263,7 +291,7 @@ namespace CoreWCFService
                 foreach (var t in tagConfig)
                 {
                     Tag tag = Tag.MakeTagFromConfigFile(t);
-                    FindValueOfTag(ref tag);
+                    if (tag is InputTag) FindValueOfTag(ref tag);
                     tags.Add(tag.Name, tag);
                 }
             }
@@ -294,7 +322,7 @@ namespace CoreWCFService
         #endregion
 
         #region tag_database
-        private static bool AddTagToDatabase(Tag tag)
+        private bool AddTagToDatabase(Tag tag)
         {
             using (var db = new TagContext())
             {

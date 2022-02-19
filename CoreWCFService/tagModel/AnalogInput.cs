@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Xml.Linq;
 using CoreWCFService.TagModel;
@@ -17,7 +18,7 @@ namespace CoreWCFService
         public string Units { get; set; }
 
         public AnalogInput(string name, string description, string iOAddress, string driver,
-            double scanTime, bool scanOnOff, double lowLimit, double highLimit, string units) :
+            int scanTime, bool scanOnOff, double lowLimit, double highLimit, string units) :
             base(name, description, iOAddress, driver, scanTime, scanOnOff)
         {
             LowLimit = lowLimit;
@@ -51,13 +52,53 @@ namespace CoreWCFService
             string desc = (string)t.Attribute("description");
             string driver = (string)t.Attribute("driver");
             string ioAddress = (string)t.Attribute("ioAddress");
-            double scanTime = (double)t.Attribute("scanTime");
+            int scanTime = (int)t.Attribute("scanTime");
             bool scanOnOff = (bool)t.Attribute("scanOnOff");
             double lowLimit = (double)t.Attribute("lowLimit");
             double highLimit = (double)t.Attribute("highLimit");
             string units = (string)t.Attribute("units");
 
             return new AnalogInput(name, desc, ioAddress, driver, scanTime, scanOnOff, lowLimit, highLimit, units);
+        }
+
+        public override void Start(TagProcessing.AlarmHandler alarmOccured, TagProcessing.ValueHandler valueChanged)
+        {
+            while (true)
+            {
+                if (ScanOnOff)
+                {
+                    double driverValue;
+                    if (Driver == "Simulation Driver")
+                        driverValue = DriversLibrary.SimulationDriver.ReturnValue(IOAddress);
+
+                    else if (Driver == "RealTime Driver")
+                        driverValue = DriversLibrary.RealTimeDriver.ReturnValue(IOAddress);
+
+                    else
+                        throw new Exception();
+
+                    if (driverValue > HighLimit) Value = HighLimit;
+                    if (driverValue < LowLimit)  Value = LowLimit;
+                    else                         Value = driverValue;
+
+                    valueChanged?.Invoke(this);
+
+                    CheckAlarms(Value, alarmOccured);
+
+                    Thread.Sleep(1000 * ScanTime);
+                }
+            }
+        }
+
+        private void CheckAlarms(double value, TagProcessing.AlarmHandler alarmOccured)
+        {
+            foreach(var alarm in Alarms)
+            {
+                if ((alarm.Type == AlarmType.LOW && value <= alarm.Limit) || (alarm.Type == AlarmType.HIGH && value >= alarm.Limit))
+                {
+                    alarmOccured?.Invoke(alarm);
+                }
+            }
         }
     }
 }

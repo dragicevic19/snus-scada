@@ -14,6 +14,7 @@ namespace CoreWCFService.TagModel
         public OutputTag(string name, string description, string iOAddress, double initValue) : base(name, description, iOAddress)
         {
             InitValue = initValue;
+            Value = InitValue;
         }
 
         public OutputTag()
@@ -21,6 +22,5 @@ namespace CoreWCFService.TagModel
         }
 
         public abstract override void WriteToXml(ref XDocument doc);
-
     }
 }

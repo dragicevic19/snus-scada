@@ -23,8 +23,8 @@ namespace DatabaseManagerClient
             {
                 System.Console.Clear();
 
-                Console.WriteLine("\n1 - Add ANALOG tag\n2 - Add DIGITAL tag\n3 - Remove tag\n4 - Change output value\n5 - Show values of output tags" +
-                    "\n6 - Turn scan on\n7 - Turn scan off\n8 - Log out\n");
+                Console.WriteLine("\n1 - Add ANALOG tag\n2 - Add DIGITAL tag\n3 - Add alarm\n4 - Remove tag\n5 - Change output value\n6 - Show values of output tags" +
+                    "\n7 - Turn scan on\n8 - Turn scan off\n9 - Log out\n");
                 Console.Write(">> ");
                 string input = Console.ReadLine();
                 switch (input)
@@ -36,21 +36,23 @@ namespace DatabaseManagerClient
                         AddDigitalTag();
                         break;
                     case "3":
+                        AddAlarm();
+                    case "4":
                         RemoveTag();
                         break;
-                    case "4":
+                    case "5":
                         ChangeOutputValue();
                         break;
-                    case "5":
+                    case "6":
                         ShowValuesOfOutputTags();
                         break;
-                    case "6":
+                    case "7":
                         TurnScanOn();
                         break;
-                    case "7":
+                    case "8":
                         TurnScanOff();
                         break;
-                    case "8":
+                    case "9":
                         if (AuthProxy.Logout(Token))
                         {
                             Console.WriteLine("Successfully logged out");
@@ -68,6 +70,22 @@ namespace DatabaseManagerClient
                         Console.WriteLine("Invalid input!\n");
                         break;
                 }
+            }
+        }
+
+        private void AddAlarm()
+        {
+            System.Console.Clear();
+            try
+            {
+                Console.WriteLine(Proxy.GetStringForPrintingTags(Token, type: "input", value: false, scan: true));
+                Console.Write("Enter name of the tag you want to change: ");
+                string tagName = Console.ReadLine();
+
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e.Message);
             }
         }
 

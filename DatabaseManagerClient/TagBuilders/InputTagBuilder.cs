@@ -9,7 +9,7 @@ namespace DatabaseManagerClient
     public class InputTagBuilder : TagBuilder, ITagBuilder
     {
         public string Driver { get; set; }
-        public double ScanTime { get; set; }
+        public int ScanTime { get; set; }
         public bool ScanOnOff { get; set; }
 
         public override void Build()
@@ -18,8 +18,8 @@ namespace DatabaseManagerClient
 
             Driver = ChooseDriver();
 
-            Console.Write("Scan time >> ");
-            ScanTime = double.Parse(Console.ReadLine());
+            Console.Write("Scan time in seconds >> ");
+            ScanTime = int.Parse(Console.ReadLine());
 
             Console.Write("Type ON or OFF to turn the scan on or off >> ");
             string scanOnOffInput = Console.ReadLine();
@@ -40,7 +40,7 @@ namespace DatabaseManagerClient
                     case "1":
                         return "Simulation Driver";
                     case "2":
-                        return "Real-Time Driver";
+                        return "RealTime Driver";
                     default:
                         Console.WriteLine("Invalid input!");
                         break;

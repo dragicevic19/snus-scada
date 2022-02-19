@@ -16,6 +16,8 @@ namespace CoreWCFService
     [ServiceBehavior]
     public class DatabaseManagerService : IDatabaseManagerService, IAuthentication
     {
+        TagProcessing TagProcessing = new TagProcessing();
+        // UserProcessing UserProcessing = new UserProcessing();
         public static void LoadScadaConfig()
         {
             TagProcessing.LoadScadaConfig();
@@ -37,7 +39,7 @@ namespace CoreWCFService
             return UserProcessing.Logout(token);
         }
 
-        public bool AddDigitalInputTag(string token, string name, string description, string driver, string ioAddress, double scanTime, bool scanOnOff)
+        public bool AddDigitalInputTag(string token, string name, string description, string driver, string ioAddress, int scanTime, bool scanOnOff)
         {
             if (!UserProcessing.IsUserAuthenticated(token)) return false;
 
@@ -51,7 +53,7 @@ namespace CoreWCFService
             return TagProcessing.AddDigitalOutputTag(name, description, ioAddress, initValue);
         }
 
-        public bool AddAnalogInputTag(string token, string name, string description, string driver, string ioAddress, double scanTime, bool scanOnOff, double lowLimit, double highLimit, string units)
+        public bool AddAnalogInputTag(string token, string name, string description, string driver, string ioAddress, int scanTime, bool scanOnOff, double lowLimit, double highLimit, string units)
         {
             if (!UserProcessing.IsUserAuthenticated(token)) return false;
 

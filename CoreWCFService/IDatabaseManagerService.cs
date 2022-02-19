@@ -12,13 +12,13 @@ namespace CoreWCFService
     {
 
         [OperationContract]
-        bool AddDigitalInputTag(string token, string name, string description, string driver, string ioAddress, double scanTime, bool scanOnOff);
+        bool AddDigitalInputTag(string token, string name, string description, string driver, string ioAddress, int scanTime, bool scanOnOff);
 
         [OperationContract]
         bool AddDigitalOutputTag(string token, string name, string description, string ioAddress, double initValue);
 
         [OperationContract] // ovde nisam stavio alarme
-        bool AddAnalogInputTag(string token, string name, string description, string driver, string ioAddress, double scanTime, bool scanOnOff, double lowLimit, double highLimit, string units);
+        bool AddAnalogInputTag(string token, string name, string description, string driver, string ioAddress, int scanTime, bool scanOnOff, double lowLimit, double highLimit, string units);
 
         [OperationContract]
         bool AddAnalogOutputTag(string token, string name, string description, string ioAddress, double initValue, double lowLimit, double highLimit, string units);

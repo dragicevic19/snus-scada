@@ -10,7 +10,7 @@ namespace CoreWCFService.TagModel
     public abstract class InputTag : Tag
     {
         public string Driver { get; set; }
-        public double ScanTime { get; set; }
+        public int ScanTime { get; set; }
         public bool ScanOnOff { get; set; }
 
         public InputTag()
@@ -18,7 +18,7 @@ namespace CoreWCFService.TagModel
         }
 
         public InputTag(string name, string description, string iOAddress, string driver,
-            double scanTime, bool scanOnOff) : base (name, description, iOAddress)
+            int scanTime, bool scanOnOff) : base (name, description, iOAddress)
         {
             Driver = driver;
             ScanTime = scanTime;
@@ -26,5 +26,8 @@ namespace CoreWCFService.TagModel
         }
 
         public abstract override void WriteToXml(ref XDocument doc);
+
+        public abstract void Start(TagProcessing.AlarmHandler alarmOccured, TagProcessing.ValueHandler valueChanged);
+
     }
 }

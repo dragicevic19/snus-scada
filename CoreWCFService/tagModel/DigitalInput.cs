@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Xml.Linq;
 using CoreWCFService.TagModel;
@@ -16,7 +17,7 @@ namespace CoreWCFService
         }
 
         public DigitalInput(string name, string description, string iOAddress, string driver,
-            double scanTime, bool scanOnOff) : base(name, description, iOAddress, driver, scanTime, scanOnOff)
+            int scanTime, bool scanOnOff) : base(name, description, iOAddress, driver, scanTime, scanOnOff)
         {
         }
 
@@ -39,10 +40,34 @@ namespace CoreWCFService
             string desc = (string)t.Attribute("description");
             string driver = (string)t.Attribute("driver");
             string ioAddress = (string)t.Attribute("ioAddress");
-            double scanTime = (double)t.Attribute("scanTime");
+            int scanTime = (int)t.Attribute("scanTime");
             bool scanOnOff = (bool)t.Attribute("scanOnOff");
 
             return new DigitalInput(name, desc, ioAddress, driver, scanTime, scanOnOff);
+        }
+
+        public override void Start(TagProcessing.AlarmHandler alarmOccured, , TagProcessing.ValueHandler valueChanged)
+        {
+            while (true)
+            {
+                if (ScanOnOff)
+                {
+                    double driverValue;
+                    if (Driver == "Simulation Driver")
+                        driverValue = DriversLibrary.SimulationDriver.ReturnValue(IOAddress);
+
+                    else if (Driver == "RealTime Driver")
+                        driverValue = DriversLibrary.RealTimeDriver.ReturnValue(IOAddress);
+
+                    else
+                        throw new Exception("error error wrong driver");
+                    
+                    Value = driverValue;
+                    valueChanged?.Invoke(this);
+
+                    Thread.Sleep(1000 * ScanTime);
+                }
+            }
         }
     }
 }
