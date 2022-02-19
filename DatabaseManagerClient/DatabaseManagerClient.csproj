@@ -45,6 +45,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="TagBuilders\AlarmBuilder.cs" />
     <Compile Include="TagBuilders\AnalogInputBuilder.cs" />
     <Compile Include="TagBuilders\AnalogOutputBuilder.cs" />
     <Compile Include="Connected Services\ServiceReference\Reference.cs">

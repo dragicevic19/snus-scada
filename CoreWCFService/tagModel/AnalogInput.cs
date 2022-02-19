@@ -21,6 +21,7 @@ namespace CoreWCFService
             int scanTime, bool scanOnOff, double lowLimit, double highLimit, string units) :
             base(name, description, iOAddress, driver, scanTime, scanOnOff)
         {
+            Alarms = new List<Alarm>();
             LowLimit = lowLimit;
             HighLimit = highLimit;
             Units = units;
@@ -32,8 +33,8 @@ namespace CoreWCFService
 
         public override void WriteToXml(ref XDocument doc)
         {
-            XElement tag = doc.Element("root");
-            tag.Add(new XElement("tag", 
+            XElement element = doc.Element("root");
+            element.Add(new XElement("tag", 
                     new XAttribute("type" , TYPE),
                     new XAttribute("name", Name),
                     new XAttribute("description", Description),
@@ -44,6 +45,13 @@ namespace CoreWCFService
                     new XAttribute("lowLimit", LowLimit),
                     new XAttribute("highLimit", HighLimit),
                     new XAttribute("units", Units)));
+            if (Alarms.Count > 0)
+            {
+                foreach(Alarm a in Alarms)
+                {
+                    a.WriteToXml(ref element);
+                }
+            }
         }
 
         public static Tag MakeTagFromConfigFile(XElement t)

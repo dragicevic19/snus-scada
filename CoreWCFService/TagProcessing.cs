@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Xml.Linq;
+using CoreWCFService.AlarmModel;
 using CoreWCFService.TagDbModel;
 using CoreWCFService.TagModel;
 
@@ -128,6 +129,28 @@ namespace CoreWCFService
             }
         }
 
+        internal bool AddAlarm(string name, string type, int priority, double limit)
+        {
+            try
+            {
+                AnalogInput ai = (AnalogInput)tags[name];
+                Alarm alarm = new Alarm((AlarmType)Enum.Parse(typeof(AlarmType), type), priority, limit, name);
+                ai.Alarms.Add(alarm);
+                if (WriteXmlConfig() && AddAlarmToDatabase(alarm))
+                {
+                    Console.WriteLine("New alarm added for tag: " + name);
+                    return true;
+                }
+                else return false;
+
+            } catch (Exception e)
+            {
+                Console.WriteLine(e.Message);
+                return false;
+            }
+        }
+
+
         internal bool RemoveTag(string tagName)
         {
             try
@@ -223,7 +246,7 @@ namespace CoreWCFService
         #endregion
 
         #region console_print_tags
-        internal string PrintTags(string type, bool value, bool scan)
+        internal string PrintTags(string ioType, string adType, bool value, bool scan)
         {
             string retStr = "==================================================================================================================\n";
 
@@ -235,19 +258,21 @@ namespace CoreWCFService
 
             foreach (KeyValuePair<string, Tag> tag in tags)
             {
-                if ((type == "input" && tag.Value is InputTag) || (type == "output" && tag.Value is OutputTag) || type == "")
+                if ((ioType == "input" && tag.Value is InputTag) || (ioType == "output" && tag.Value is OutputTag) || ioType == "")
                 {
-                    string IOtype = (tag.Value is InputTag) ? "INPUT" : "OUTPUT";
-                    string digAnaType = (tag.Value is DigitalInput || tag.Value is DigitalOutput) ? "DIGITAL" : "ANALOG";
-                    retStr += String.Format("|{0,-20}|{1,-16}|{2,-16}|{3,-41}|", tag.Value.Name, IOtype, digAnaType, tag.Value.Description);
+                    if ((adType == "analog" && (tag.Value is AnalogInput || tag.Value is AnalogOutput)) || adType == "")
+                    {                                                                                                           // ne proveravam za Digital jer mi ne treba 
+                        string IOtype = (tag.Value is InputTag) ? "INPUT" : "OUTPUT";                                           // za sad nigde samo digital tagove da ispisujem
+                        string digAnaType = (tag.Value is DigitalInput || tag.Value is DigitalOutput) ? "DIGITAL" : "ANALOG";
+                        retStr += String.Format("|{0,-20}|{1,-16}|{2,-16}|{3,-41}|", tag.Value.Name, IOtype, digAnaType, tag.Value.Description);
 
-                    if (value) retStr += String.Format("{0,5}|", tag.Value.Value);
+                        if (value) retStr += String.Format("{0,5}|", tag.Value.Value);
 
-                    if (scan) retStr += String.Format("{0,-11}|", ((InputTag)tag.Value).ScanOnOff);
+                        if (scan) retStr += String.Format("{0,-11}|", ((InputTag)tag.Value).ScanOnOff);
 
-                    retStr += "\n";
-                    retStr += "------------------------------------------------------------------------------------------------------------------\n";
-
+                        retStr += "\n";
+                        retStr += "------------------------------------------------------------------------------------------------------------------\n";
+                    }
                 }
             }
             retStr += "==================================================================================================================";
@@ -264,8 +289,8 @@ namespace CoreWCFService
             {
                 //if (!File.Exists(CONFIG_FILE_PATH)) CreateNewXmlFile();
                 XDocument doc = XDocument.Load(CONFIG_FILE_PATH);
-                doc.Descendants("tag").Remove();                    // brisem sve pa ponovo sve upisujem zbog izmena?
-                                                                    // ili je mozda bolje da trazim da li postoji pa onda menjam?
+                doc.Descendants("tag").Remove();
+                doc.Descendants("alarm").Remove();
                 foreach (KeyValuePair<string, Tag> tag in tags)
                 {
                     tag.Value.WriteToXml(ref doc);
@@ -288,18 +313,35 @@ namespace CoreWCFService
             {
                 XElement configElements = XElement.Load(CONFIG_FILE_PATH);
                 var tagConfig = configElements.Descendants("tag");
-                foreach (var t in tagConfig)
-                {
-                    Tag tag = Tag.MakeTagFromConfigFile(t);
-                    if (tag is InputTag) FindValueOfTag(ref tag);
-                    tags.Add(tag.Name, tag);
-                }
+                LoadTags(tagConfig);
+                var alarmConfig = configElements.Descendants("alarm");
+                LoadAlarms(alarmConfig);
             }
             catch (Exception e)
             {
                 Console.WriteLine(e.Message);
             }
         }
+
+        private static void LoadAlarms(IEnumerable<XElement> alarmConfig)
+        {
+            foreach (var a in alarmConfig)
+            {
+                Alarm alarm = Alarm.MakeAlarmFromConfigFile(a);
+                ((AnalogInput)tags[alarm.TagName]).Alarms.Add(alarm);
+            }
+        }
+
+        private static void LoadTags(IEnumerable<XElement> tagConfig)
+        {
+            foreach (var t in tagConfig)
+            {
+                Tag tag = Tag.MakeTagFromConfigFile(t);
+                if (tag is InputTag) FindValueOfTag(ref tag);
+                tags.Add(tag.Name, tag);
+            }
+        }
+
         private static void FindValueOfTag(ref Tag tag)
         {
             List<TagDb> allTags = new List<TagDb>();
@@ -321,7 +363,7 @@ namespace CoreWCFService
 
         #endregion
 
-        #region tag_database
+        #region database
         private bool AddTagToDatabase(Tag tag)
         {
             using (var db = new TagContext())
@@ -329,6 +371,24 @@ namespace CoreWCFService
                 try
                 {
                     db.Tags.Add(new TagDb(tag.Name, tag.Value, DateTime.Now));
+                    db.SaveChanges();
+                    return true;
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine(e.Message);
+                    return false;
+                }
+            }
+        }
+
+        private bool AddAlarmToDatabase(Alarm alarm)
+        {
+            using (var db = new AlarmContext())
+            {
+                try
+                {
+                    db.Alarms.Add(new AlarmDTO(alarm.TagName, alarm.Type, DateTime.Now));
                     db.SaveChanges();
                     return true;
                 }

@@ -52,7 +52,7 @@
         <xs:element minOccurs="0" name="description" nillable="true" type="xs:string" />
         <xs:element minOccurs="0" name="driver" nillable="true" type="xs:string" />
         <xs:element minOccurs="0" name="ioAddress" nillable="true" type="xs:string" />
-        <xs:element minOccurs="0" name="scanTime" type="xs:double" />
+        <xs:element minOccurs="0" name="scanTime" type="xs:int" />
         <xs:element minOccurs="0" name="scanOnOff" type="xs:boolean" />
       </xs:sequence>
     </xs:complexType>
@@ -90,7 +90,7 @@
         <xs:element minOccurs="0" name="description" nillable="true" type="xs:string" />
         <xs:element minOccurs="0" name="driver" nillable="true" type="xs:string" />
         <xs:element minOccurs="0" name="ioAddress" nillable="true" type="xs:string" />
-        <xs:element minOccurs="0" name="scanTime" type="xs:double" />
+        <xs:element minOccurs="0" name="scanTime" type="xs:int" />
         <xs:element minOccurs="0" name="scanOnOff" type="xs:boolean" />
         <xs:element minOccurs="0" name="lowLimit" type="xs:double" />
         <xs:element minOccurs="0" name="highLimit" type="xs:double" />
@@ -123,6 +123,24 @@
     <xs:complexType>
       <xs:sequence>
         <xs:element minOccurs="0" name="AddAnalogOutputTagResult" type="xs:boolean" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="AddAlarm">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" name="token" nillable="true" type="xs:string" />
+        <xs:element minOccurs="0" name="name" nillable="true" type="xs:string" />
+        <xs:element minOccurs="0" name="type" nillable="true" type="xs:string" />
+        <xs:element minOccurs="0" name="priority" type="xs:int" />
+        <xs:element minOccurs="0" name="limit" type="xs:double" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="AddAlarmResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" name="AddAlarmResult" type="xs:boolean" />
       </xs:sequence>
     </xs:complexType>
   </xs:element>
@@ -206,7 +224,8 @@
     <xs:complexType>
       <xs:sequence>
         <xs:element minOccurs="0" name="token" nillable="true" type="xs:string" />
-        <xs:element minOccurs="0" name="type" nillable="true" type="xs:string" />
+        <xs:element minOccurs="0" name="ioType" nillable="true" type="xs:string" />
+        <xs:element minOccurs="0" name="adType" nillable="true" type="xs:string" />
         <xs:element minOccurs="0" name="value" type="xs:boolean" />
         <xs:element minOccurs="0" name="scan" type="xs:boolean" />
       </xs:sequence>

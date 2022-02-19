@@ -1,5 +1,6 @@
 ﻿using System;
 using DatabaseManagerClient.ServiceReference;
+using DatabaseManagerClient.TagBuilders;
 
 namespace DatabaseManagerClient
 {
@@ -37,6 +38,7 @@ namespace DatabaseManagerClient
                         break;
                     case "3":
                         AddAlarm();
+                        break;
                     case "4":
                         RemoveTag();
                         break;
@@ -78,10 +80,25 @@ namespace DatabaseManagerClient
             System.Console.Clear();
             try
             {
-                Console.WriteLine(Proxy.GetStringForPrintingTags(Token, type: "input", value: false, scan: true));
-                Console.Write("Enter name of the tag you want to change: ");
+                Console.WriteLine(Proxy.GetStringForPrintingTags(Token, ioType: "input", adType: "analog" ,value: false, scan: true));
+                Console.Write("Enter the name of the tag for which you want to add an alarm: ");
                 string tagName = Console.ReadLine();
-
+                AlarmBuilder alarm = new AlarmBuilder();
+                alarm.Build(tagName);
+                if (!alarm.Error)
+                {
+                    Console.WriteLine("Adding alarm...");
+                    if (Proxy.AddAlarm(Token, alarm.TagName, alarm.Type, alarm.Priority, alarm.Limit))
+                    {
+                        Console.WriteLine("Analog input tag added successfully");
+                    }
+                    else
+                    {
+                        Console.WriteLine("An error occurred while adding the tag");
+                    }
+                }
+                Console.Write("Press any key to continue...");
+                Console.ReadKey();
             }
             catch (Exception e)
             {
@@ -227,7 +244,7 @@ namespace DatabaseManagerClient
         {
             System.Console.Clear();
 
-            Console.WriteLine(Proxy.GetStringForPrintingTags(Token, type:"", value:false, scan:false));
+            Console.WriteLine(Proxy.GetStringForPrintingTags(Token, ioType:"", adType:"", value:false, scan:false));
             Console.Write("Enter name of the tag you want to remove: ");
             string tagName = Console.ReadLine();
 
@@ -248,7 +265,7 @@ namespace DatabaseManagerClient
             System.Console.Clear();
             try
             {
-                Console.WriteLine(Proxy.GetStringForPrintingTags(Token, type: "output", value: true, scan: false));
+                Console.WriteLine(Proxy.GetStringForPrintingTags(Token, ioType: "output",adType: "", value: true, scan: false));
                 Console.Write("Enter name of the tag you want to change: ");
                 string tagName = Console.ReadLine();
 
@@ -278,7 +295,7 @@ namespace DatabaseManagerClient
         private void ShowValuesOfOutputTags()
         {
             System.Console.Clear();
-            Console.WriteLine(Proxy.GetStringForPrintingTags(Token, type: "output", value: true, scan: false));
+            Console.WriteLine(Proxy.GetStringForPrintingTags(Token, ioType: "output",adType: "", value: true, scan: false));
             Console.Write("\nPress any key to continue...");
             Console.ReadKey();
         }
@@ -286,7 +303,7 @@ namespace DatabaseManagerClient
         private void TurnScanOn()
         { 
             System.Console.Clear();
-            Console.WriteLine(Proxy.GetStringForPrintingTags(Token, type: "input", value: false, scan: true));
+            Console.WriteLine(Proxy.GetStringForPrintingTags(Token, ioType: "input", adType: "", value: false, scan: true));
             Console.Write("Enter name of the tag for which you want to turn scan ON: ");
             string tagName = Console.ReadLine();
 
@@ -305,7 +322,7 @@ namespace DatabaseManagerClient
         private void TurnScanOff()
         {
             System.Console.Clear();
-            Console.WriteLine(Proxy.GetStringForPrintingTags(Token, type: "input", value: false, scan: true));
+            Console.WriteLine(Proxy.GetStringForPrintingTags(Token, ioType: "input", adType: "", value: false, scan: true));
             Console.Write("Enter name of the tag for which you want to turn scan OFF: ");
             string tagName = Console.ReadLine();
 

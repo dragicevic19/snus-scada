@@ -24,6 +24,9 @@ namespace CoreWCFService
         bool AddAnalogOutputTag(string token, string name, string description, string ioAddress, double initValue, double lowLimit, double highLimit, string units);
 
         [OperationContract]
+        bool AddAlarm(string token, string name, string type, int priority, double limit);
+
+        [OperationContract]
         bool RemoveTag(string token, string tagName);
 
         [OperationContract]
@@ -39,7 +42,7 @@ namespace CoreWCFService
         bool TurnScanOff(string token, string tagName);
 
         [OperationContract]
-        string GetStringForPrintingTags(string token, string type="", bool value=false, bool scan=false);
+        string GetStringForPrintingTags(string token, string ioType="", string adType="", bool value=false, bool scan=false);
 
     }
 }

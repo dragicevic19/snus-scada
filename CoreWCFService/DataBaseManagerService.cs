@@ -102,11 +102,18 @@ namespace CoreWCFService
             return TagProcessing.TurnScanOn(tagName);
         }
 
-        public string GetStringForPrintingTags(string token, string type="", bool value = false, bool scan = false)
+        public string GetStringForPrintingTags(string token, string ioType="", string adType="", bool value = false, bool scan = false)
         {
             if (!UserProcessing.IsUserAuthenticated(token)) return "Wrong authentication token";
 
-            return TagProcessing.PrintTags(type, value, scan);
+            return TagProcessing.PrintTags(ioType, adType, value, scan);
+        }
+
+        public bool AddAlarm(string token, string name, string type, int priority, double limit)
+        {
+            if (!UserProcessing.IsUserAuthenticated(token)) return false;
+
+            return TagProcessing.AddAlarm(name, type, priority, limit);
         }
     }
 }

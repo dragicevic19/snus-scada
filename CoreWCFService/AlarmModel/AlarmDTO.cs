@@ -15,5 +15,13 @@ namespace CoreWCFService.AlarmModel
         public AlarmType Type { get; set; }
         public DateTime TimeStamp { get; set; }
 
+        public AlarmDTO(string tagName, AlarmType type, DateTime timeStamp)
+        {
+            TagName = tagName;
+            Type = type;
+            TimeStamp = timeStamp;
+        }
+
+        public AlarmDTO() { }
     }
 }

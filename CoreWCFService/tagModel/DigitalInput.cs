@@ -46,7 +46,7 @@ namespace CoreWCFService
             return new DigitalInput(name, desc, ioAddress, driver, scanTime, scanOnOff);
         }
 
-        public override void Start(TagProcessing.AlarmHandler alarmOccured, , TagProcessing.ValueHandler valueChanged)
+        public override void Start(TagProcessing.AlarmHandler alarmOccured, TagProcessing.ValueHandler valueChanged)
         {
             while (true)
             {
