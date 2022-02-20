@@ -9,6 +9,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DatabaseManagerClient", "Da
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DriversLibrary", "DriversLibrary\DriversLibrary.csproj", "{74B6B34F-8A25-4353-B637-BF95BEFA45E7}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TrendingClient", "TrendingClient\TrendingClient.csproj", "{D43E29F5-EBC6-4030-8DA7-5C9105F975A3}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AlarmDisplayClient", "AlarmDisplayClient\AlarmDisplayClient.csproj", "{744EF9A3-19CF-4A94-89A7-F6259D2BA227}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -27,6 +31,14 @@ Global
 		{74B6B34F-8A25-4353-B637-BF95BEFA45E7}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{74B6B34F-8A25-4353-B637-BF95BEFA45E7}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{74B6B34F-8A25-4353-B637-BF95BEFA45E7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D43E29F5-EBC6-4030-8DA7-5C9105F975A3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D43E29F5-EBC6-4030-8DA7-5C9105F975A3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D43E29F5-EBC6-4030-8DA7-5C9105F975A3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D43E29F5-EBC6-4030-8DA7-5C9105F975A3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{744EF9A3-19CF-4A94-89A7-F6259D2BA227}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{744EF9A3-19CF-4A94-89A7-F6259D2BA227}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{744EF9A3-19CF-4A94-89A7-F6259D2BA227}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{744EF9A3-19CF-4A94-89A7-F6259D2BA227}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

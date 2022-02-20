@@ -1,8 +1,10 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <root>
   <tag type="DigitalOutput" name="digiOut" description="digital output ttag for testting" ioAddress="R" initValue="0" />
-  <tag type="AnalogInput" name="testspori" description="sad" driver="Simulation Driver" ioAddress="R" scanTime="8" scanOnOff="true" lowLimit="1" highLimit="100" units="m" />
-  <alarm id="4" type="HIGH" priority="3" limit="95" tagName="testspori" />
-  <alarm id="6" type="LOW" priority="1" limit="10" tagName="testspori" />
-  <tag type="DigitalInput" name="testDIGIspor" description="djksal" driver="Simulation Driver" ioAddress="R" scanTime="10" scanOnOff="true" />
+  <tag type="AnalogInput" name="slowAnalog" description="sad" driver="Simulation Driver" ioAddress="R" scanTime="8" scanOnOff="false" lowLimit="1" highLimit="100" units="m" />
+  <alarm id="4" type="HIGH" priority="3" limit="95" tagName="slowAnalog" />
+  <alarm id="6" type="LOW" priority="1" limit="10" tagName="slowAnalog" />
+  <alarm id="8" type="HIGH" priority="3" limit="85" tagName="slowAnalog" />
+  <tag type="DigitalInput" name="slowDigital" description="djksal" driver="Simulation Driver" ioAddress="R" scanTime="10" scanOnOff="false" />
+  <tag type="DigitalInput" name="digitest" description="didsadkjl" driver="Simulation Driver" ioAddress="R" scanTime="5" scanOnOff="false" />
 </root>

@@ -71,7 +71,7 @@ namespace CoreWCFService
 
         public override void Start(TagProcessing.AlarmHandler alarmOccured, TagProcessing.ValueHandler valueChanged)
         {
-            while (true)
+            /*while (true)
             {
                 if (ScanOnOff)
                 {
@@ -95,18 +95,18 @@ namespace CoreWCFService
 
                     Thread.Sleep(1000 * ScanTime);
                 }
-            }
+            }*/
         }
 
         private void CheckAlarms(double value, TagProcessing.AlarmHandler alarmOccured)
         {
-            foreach(var alarm in Alarms)
+            /*foreach(var alarm in Alarms)
             {
                 if ((alarm.Type == AlarmType.LOW && value <= alarm.Limit) || (alarm.Type == AlarmType.HIGH && value >= alarm.Limit))
                 {
                     alarmOccured?.Invoke(alarm);
                 }
-            }
+            }*/
         }
     }
 }

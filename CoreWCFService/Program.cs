@@ -11,14 +11,21 @@ namespace CoreWCFService
     {
         static void Main(string[] args)
         {
-            TagProcessing tagProcessing = TagProcessing.GetInstance();
-            // DatabaseManagerService.LoadScadaConfig();   // da li ovako da pozivam ucitavanje config fajla?
+            TagProcessing.GetInstance();
 
             ServiceHost svc = new ServiceHost(typeof(DatabaseManagerService));
             svc.Open();
-            Console.WriteLine("Database Manager Service is ready...");
+            ServiceHost svcTrending = new ServiceHost(typeof(TrendingService));
+            svcTrending.Open();
+            ServiceHost svcAlarm = new ServiceHost(typeof(AlarmDisplayService));
+            svcAlarm.Open();
 
+            Console.WriteLine("Service is ready...");
             Console.ReadKey();
+
+            svc.Close();
+            svcTrending.Close();
+            svcAlarm.Close();
         }
     }
 }

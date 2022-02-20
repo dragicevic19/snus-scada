@@ -48,7 +48,7 @@ namespace CoreWCFService
 
         public override void Start(TagProcessing.AlarmHandler alarmOccured, TagProcessing.ValueHandler valueChanged)
         {
-            while (true)
+           /* while (true)
             {
                 if (ScanOnOff)
                 {
@@ -67,7 +67,7 @@ namespace CoreWCFService
 
                     Thread.Sleep(1000 * ScanTime);
                 }
-            }
+            }*/
         }
     }
 }

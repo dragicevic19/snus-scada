@@ -13,7 +13,7 @@ using CoreWCFService.TagModel;
 
 namespace CoreWCFService
 {
-    [ServiceBehavior]
+    [ServiceBehavior]   // dodati instanceContext per session
     public class DatabaseManagerService : IDatabaseManagerService, IAuthentication
     {
         TagProcessing TagProcessing;

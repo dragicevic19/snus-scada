@@ -17,14 +17,18 @@ namespace CoreWCFService
         const string CONFIG_FILE_PATH = @"../../data/scadaConfig.xml";
         const string ALARM_TXT_PATH = @"../../data/alarmLog.txt";
 
+
         private static Dictionary<string, Tag> tags = new Dictionary<string, Tag>();    // key is TagName
         static readonly object tagsLocker = new object();
+
+        private static Dictionary<string, Thread> tagThreads = new Dictionary<string, Thread>();
+        static readonly object threadLocker = new object();
+
         private static List<Alarm> alarms = new List<Alarm>();
-        static readonly object alarmsLocker= new object();
+        static readonly object alarmsLocker = new object();
 
-
-        public delegate void AlarmHandler(Alarm alarm);
-        public delegate void ValueHandler(Tag tag);
+        public delegate void AlarmHandler(Alarm alarm, DateTime timeStamp);
+        public delegate void ValueHandler(TagDb tag);
 
         public event AlarmHandler AlarmOccured;
         public event ValueHandler ValueChanged;
@@ -44,43 +48,56 @@ namespace CoreWCFService
 
         private TagProcessing()
         {
-            AlarmOccured += OnAlarmOccured; // ovde ili u nekim metodama koje ce pozivati Trending i AlarmDisplay servisi?
+            AlarmOccured += OnAlarmOccured;
             ValueChanged += OnValueChanged;
         }
 
+        #region eventHandlers
+
+        internal void AddProxyForTrending(ITrendingCallback proxy)
+        {
+            ValueChanged += proxy.OnValueChanged;
+        }
+        internal void AddProxyForAlarmDisplay(IAlarmDisplayCallback proxy)
+        {
+            AlarmOccured += proxy.OnAlarmOccured;
+        }
+        internal void OnAlarmOccured(Alarm alarm, DateTime timestamp)
+        {
+            AddAlarmToDatabase(alarm);
+            AddAlarmToTxt(alarm);
+        }
+        internal void OnValueChanged(TagDb tag)
+        {
+            AddTagToDatabase(tag);
+        }
+
+        #endregion
+
         public static void StartInputTags()
         {
-            Console.WriteLine("POKRECEM INPUT TAGOVEEEEEEEEEEEEE");
-            foreach(KeyValuePair<string, Tag> tagMap in tags)
+            Console.WriteLine("Starting input tags...");
+            foreach (KeyValuePair<string, Tag> tagMap in tags)
             {
                 if (tagMap.Value is AnalogInput)
                 {
-                    Thread th = new Thread (() => Instance.StartAnalogInputJob(((AnalogInput)tagMap.Value)));
+                    Thread th = new Thread(() => Instance.StartAnalogInputJob(((AnalogInput)tagMap.Value)));
                     th.Start();
+                    lock (threadLocker)
+                    {
+                        tagThreads.Add(tagMap.Value.Name, th);
+                    }
                 }
                 else if (tagMap.Value is DigitalInput)
                 {
                     Thread thh = new Thread(() => Instance.StartDigitalInputJob((DigitalInput)tagMap.Value));
                     thh.Start();
+                    lock (threadLocker)
+                    {
+                        tagThreads.Add(tagMap.Value.Name, thh);
+                    }
                 }
-            }         // ne znam sta se desava
-        }
-
-        internal void OnAlarmOccured(Alarm alarm)
-        {
-            AddAlarmToDatabase(alarm);
-            AddAlarmToTxt(alarm);
-            Console.WriteLine("ALARM OCCURED: " + alarm.TagName + " limit: " + alarm.Limit + ", type: " + alarm.Type);
-            // dodaj callback za alarmdisplay
-        }
-
-
-        internal void OnValueChanged(Tag tag)
-        {
-            AddTagToDatabase(tag);
-            Console.WriteLine("VALUE CHANGED: " + tag.Name + ", value: " + tag.Value);
-            // plus callback
-            // dodaj callback za trending
+            }
         }
 
         #region tags
@@ -89,11 +106,18 @@ namespace CoreWCFService
             try
             {
                 AnalogInput tag = new AnalogInput(name, description, ioAddress, driver, scanTime, scanOnOff, lowLimit, highLimit, units);
-                tags.Add(tag.Name, tag);
-                if (AddTagToDatabase(tag) && WriteXmlConfig())
+                lock (tagsLocker)
+                {
+                    tags.Add(tag.Name, tag);
+                }
+                if (AddTagToDatabase(new TagDb(tag.Name, tag.Value, DateTime.Now)) && WriteXmlConfig())
                 {
                     Thread t = new Thread(() => StartAnalogInputJob(tag));
                     t.Start();
+                    lock (threadLocker)
+                    {
+                        tagThreads.Add(tag.Name, t);
+                    }
                     Console.WriteLine("New tag added: " + name);
                     return true;
                 }
@@ -107,7 +131,7 @@ namespace CoreWCFService
             }
         }
 
-        private void StartAnalogInputJob(AnalogInput tag)
+        /*private void StartAnalogInputJob(AnalogInput tag)
         {
             while (true)
             {
@@ -136,7 +160,7 @@ namespace CoreWCFService
                             if (oldValue != newValue)
                             {
                                 tag.Value = newValue;
-                                ValueChanged?.Invoke(tag);
+                                ValueChanged?.Invoke(tag, DateTime.Now);
                             }
                             CheckIfAlarmOccured(tag);
                         }
@@ -149,18 +173,50 @@ namespace CoreWCFService
                 }
                 Thread.Sleep(1000 * tag.ScanTime);
             }
-        }
+        }*/
 
+        private void StartAnalogInputJob(AnalogInput tag)
+        {
+            while (true)
+            {
+                if (tag.ScanOnOff)
+                {
+                    double oldValue = tag.Value;
+                    double newValue;
+                    double driverValue;
+                    if (tag.Driver == "Simulation Driver")
+                        driverValue = DriversLibrary.SimulationDriver.ReturnValue(tag.IOAddress);
+
+                    else if (tag.Driver == "RealTime Driver")
+                        driverValue = DriversLibrary.RealTimeDriver.ReturnValue(tag.IOAddress);
+
+                    else
+                        throw new Exception();
+
+                    if (driverValue > tag.HighLimit) newValue = tag.HighLimit;
+                    else if (driverValue < tag.LowLimit) newValue = tag.LowLimit;
+                    else newValue = driverValue;
+
+                    if (oldValue != newValue)
+                    {
+                        lock (tagsLocker)
+                        {
+                            tag.Value = newValue;
+                        }
+                        ValueChanged?.Invoke(new TagDb(tag.Name, tag.Value, DateTime.Now));
+                    }
+                    CheckIfAlarmOccured(tag);
+                    Thread.Sleep(1000 * tag.ScanTime);
+                }
+            }
+        }
         private void CheckIfAlarmOccured(AnalogInput tag)
         {
-            lock (alarmsLocker)
+            foreach (var alarm in tag.Alarms)
             {
-                foreach (var alarm in tag.Alarms)
+                if ((alarm.Type == AlarmType.LOW && tag.Value <= alarm.Limit) || (alarm.Type == AlarmType.HIGH && tag.Value >= alarm.Limit))
                 {
-                    if ((alarm.Type == AlarmType.LOW && tag.Value <= alarm.Limit) || (alarm.Type == AlarmType.HIGH && tag.Value >= alarm.Limit))
-                    {
-                        AlarmOccured?.Invoke(alarm);
-                    }
+                    AlarmOccured?.Invoke(alarm, DateTime.Now);
                 }
             }
         }
@@ -170,8 +226,11 @@ namespace CoreWCFService
             try
             {
                 Tag tag = new AnalogOutput(name, description, ioAddress, initValue, lowLimit, highLimit, units);
-                tags.Add(tag.Name, tag);
-                if (AddTagToDatabase(tag) && WriteXmlConfig())
+                lock (tagsLocker)
+                {
+                    tags.Add(tag.Name, tag);
+                }
+                if (AddTagToDatabase(new TagDb(tag.Name, tag.Value, DateTime.Now)) && WriteXmlConfig())
                 {
                     Console.WriteLine("New tag added: " + name);
                     return true;
@@ -191,11 +250,18 @@ namespace CoreWCFService
             try
             {
                 DigitalInput tag = new DigitalInput(name, description, ioAddress, driver, scanTime, scanOnOff);
-                tags.Add(tag.Name, tag);
-                if (AddTagToDatabase(tag) && WriteXmlConfig())
+                lock (tagsLocker)
+                {
+                    tags.Add(tag.Name, tag);
+                }
+                if (AddTagToDatabase(new TagDb(tag.Name, tag.Value, DateTime.Now)) && WriteXmlConfig())
                 {
                     Thread tDigi = new Thread(() => StartDigitalInputJob(tag));
                     tDigi.Start();
+                    lock (threadLocker)
+                    {
+                        tagThreads.Add(tag.Name, tDigi);
+                    }
                     Console.WriteLine("New tag added: " + name);
                     return true;
                 }
@@ -210,7 +276,7 @@ namespace CoreWCFService
                 return false;
             }
         }
-
+/*
         private void StartDigitalInputJob(DigitalInput tag)
         {
             while (true)
@@ -232,7 +298,7 @@ namespace CoreWCFService
                                 throw new Exception("error error wrong driver");
 
                             tag.Value = driverValue;
-                            ValueChanged?.Invoke(tag);
+                            ValueChanged?.Invoke(tag, DateTime.Now);
                             // odavde sam premestio sleep zbog lock
                         }
                     }
@@ -244,6 +310,31 @@ namespace CoreWCFService
                 }
                 Thread.Sleep(1000 * tag.ScanTime);
             }
+        }*/
+
+        private void StartDigitalInputJob(DigitalInput tag)
+        {
+            while (true)
+            {
+                if (tag.ScanOnOff)
+                {
+                    double driverValue;
+                    if (tag.Driver == "Simulation Driver")
+                        driverValue = DriversLibrary.SimulationDriver.ReturnValue(tag.IOAddress);
+
+                    else if (tag.Driver == "RealTime Driver")
+                        driverValue = DriversLibrary.RealTimeDriver.ReturnValue(tag.IOAddress);
+
+                    else
+                        throw new Exception("error error wrong driver");
+                    lock (tagsLocker)
+                    {
+                        tag.Value = driverValue;
+                    }
+                    ValueChanged?.Invoke(new TagDb(tag.Name, tag.Value, DateTime.Now));
+                    Thread.Sleep(1000 * tag.ScanTime);
+                }
+            }
         }
 
         internal bool AddDigitalOutputTag(string name, string description, string ioAddress, double initValue)
@@ -251,8 +342,11 @@ namespace CoreWCFService
             try
             {
                 Tag tag = new DigitalOutput(name, description, ioAddress, initValue);
-                tags.Add(tag.Name, tag);
-                if (AddTagToDatabase(tag) && WriteXmlConfig())
+                lock (tagsLocker)
+                {
+                    tags.Add(tag.Name, tag);
+                }
+                if (AddTagToDatabase(new TagDb(tag.Name, tag.Value, DateTime.Now)) && WriteXmlConfig())
                 {
                     Console.WriteLine("New tag added: " + name);
                     return true;
@@ -271,20 +365,20 @@ namespace CoreWCFService
         {
             try
             {
+                AnalogInput ai = (AnalogInput)tags[name];
+                int id = FindNewAlarmId();
+                Alarm alarm = new Alarm(id, (AlarmType)Enum.Parse(typeof(AlarmType), type), priority, limit, name);
+                ai.Alarms.Add(alarm);
                 lock (alarmsLocker)
                 {
-                    AnalogInput ai = (AnalogInput)tags[name];
-                    int id = FindNewAlarmId();
-                    Alarm alarm = new Alarm(id, (AlarmType)Enum.Parse(typeof(AlarmType), type), priority, limit, name);
-                    ai.Alarms.Add(alarm);
                     alarms.Add(alarm);
-                    if (WriteXmlConfig())
-                    {
-                        Console.WriteLine("New alarm added for tag: " + name);
-                        return true;
-                    }
-                    else return false;
                 }
+                if (WriteXmlConfig())
+                {
+                    Console.WriteLine("New alarm added for tag: " + name);
+                    return true;
+                }
+                else return false;
             } catch (Exception e)
             {
                 Console.WriteLine(e.Message);
@@ -309,24 +403,27 @@ namespace CoreWCFService
         {
             try
             {
-                lock (alarmsLocker)
+                foreach (Alarm alarm in alarms)
                 {
-                    foreach (Alarm alarm in alarms)
+                    if (alarm.Id == id)
                     {
-                        if (alarm.Id == id)
+                        lock (tagsLocker)
                         {
                             ((AnalogInput)tags[alarm.TagName]).Alarms.Remove(alarm);
-
-                            if (alarms.Remove(alarm) && WriteXmlConfig())
-                            {
-                                Console.WriteLine("Alarm deleted!");
-                                return true;
-                            }
-                            else return false;
                         }
+                        lock (alarmsLocker)
+                        {
+                            if (!alarms.Remove(alarm)) return false;
+                        }
+                        if (WriteXmlConfig())
+                        {
+                            Console.WriteLine("Alarm deleted!");
+                            return true;
+                        }
+                        else return false;
                     }
-                    return false;
                 }
+                return false;
             } catch (Exception e)
             {
                 Console.WriteLine(e.Message);
@@ -339,15 +436,26 @@ namespace CoreWCFService
         {
             try
             {
+                if (tags[tagName] is InputTag)
+                {
+                    lock (threadLocker)
+                    {
+                        tagThreads[tagName].Abort();
+                        tagThreads.Remove(tagName);
+                    }
+                }
+
                 lock (tagsLocker)
                 {
-                    if (tags.Remove(tagName) && WriteXmlConfig())   // i zaustavi sve tredove za ovaj tag
-                    {
-                        Console.WriteLine("Tag removed: " + tagName);
-                        return true;
-                    }
-                    else return false;
+                    if (!tags.Remove(tagName)) return false;
                 }
+                
+                if (WriteXmlConfig())
+                {
+                    Console.WriteLine("Tag removed: " + tagName);
+                    return true;
+                }
+                else return false;
             }
             catch (Exception e)
             {
@@ -360,7 +468,10 @@ namespace CoreWCFService
         {
             try
             {
-                ((InputTag)tags[tagName]).ScanOnOff = true;
+                lock (tagsLocker)
+                {
+                    ((InputTag)tags[tagName]).ScanOnOff = true;
+                }
                 if (WriteXmlConfig())
                 {
                     Console.WriteLine("Scan turned ON for tag: " + tagName);
@@ -379,7 +490,10 @@ namespace CoreWCFService
         {
             try
             {
-                ((InputTag)tags[tagName]).ScanOnOff = false;
+                lock (tagsLocker)
+                {
+                    ((InputTag)tags[tagName]).ScanOnOff = false;
+                }
                 if (WriteXmlConfig())
                 {
                     Console.WriteLine("Scan turned OFF for tag: " + tagName);
@@ -402,7 +516,7 @@ namespace CoreWCFService
                 Console.WriteLine("Output value returned: " + tags[tagName].Value);
                 return tags[tagName].Value;
             }
-            catch (Exception e)   // povratne vrednosti sredi
+            catch (Exception e)
             {
                 Console.WriteLine(e.Message);
                 return -20000;
@@ -413,8 +527,11 @@ namespace CoreWCFService
         {
             try
             {
-                tags[tagName].Value = value;
-                if (AddTagToDatabase(tags[tagName]))
+                lock (tagsLocker)
+                {
+                    tags[tagName].Value = value;
+                }
+                if (AddTagToDatabase(new TagDb(tags[tagName].Name, tags[tagName].Value, DateTime.Now)))
                 {
                     Console.WriteLine("Value changed on tag: " + tagName + ", to a new value: " + value);
                     return true;
@@ -517,7 +634,7 @@ namespace CoreWCFService
         {
             try
             {
-                Console.WriteLine("LOAD SCADA CONFIGGGGG");
+                Console.WriteLine("Loading SCADA configuration...");
                 XElement configElements = XElement.Load(CONFIG_FILE_PATH);
                 var tagConfig = configElements.Descendants("tag");
                 LoadTags(tagConfig);
@@ -572,13 +689,13 @@ namespace CoreWCFService
         #endregion
 
         #region database
-        private bool AddTagToDatabase(Tag tag)
+        private bool AddTagToDatabase(TagDb tag)
         {
             using (var db = new TagContext())
             {
                 try
                 {
-                    db.Tags.Add(new TagDb(tag.Name, tag.Value, DateTime.Now));
+                    db.Tags.Add(tag);
                     db.SaveChanges();
                     return true;
                 }
@@ -612,7 +729,6 @@ namespace CoreWCFService
         {
             try
             {
-                string stringToWrite = "";
                 File.AppendAllText(ALARM_TXT_PATH, alarm.Id + "|" + alarm.TagName + "|" + alarm.Type + "|" + DateTime.Now + Environment.NewLine);
             }
             catch (Exception e)

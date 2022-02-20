@@ -25,7 +25,7 @@ namespace DatabaseManagerClient
                 System.Console.Clear();
 
                 Console.WriteLine("\n1 - Add ANALOG tag\n2 - Add DIGITAL tag\n3 - Add alarm\n4 - Remove alarm\n5 - Remove tag\n6 - Change output value\n7 - Show values of output tags" +
-                    "\n8 - Turn scan on\n9 - Turn scan off\nx- Log out\n");
+                    "\n8 - Turn scan on\n9 - Turn scan off\nx - Log out\n");
                 Console.Write(">> ");
                 string input = Console.ReadLine();
                 switch (input.ToLower())
