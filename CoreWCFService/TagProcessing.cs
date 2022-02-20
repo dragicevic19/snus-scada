@@ -18,7 +18,10 @@ namespace CoreWCFService
         const string ALARM_TXT_PATH = @"../../data/alarmLog.txt";
 
         private static Dictionary<string, Tag> tags = new Dictionary<string, Tag>();    // key is TagName
+        static readonly object tagsLocker = new object();
         private static List<Alarm> alarms = new List<Alarm>();
+        static readonly object alarmsLocker= new object();
+
 
         public delegate void AlarmHandler(Alarm alarm);
         public delegate void ValueHandler(Tag tag);
@@ -28,14 +31,15 @@ namespace CoreWCFService
 
         public TagProcessing()
         {
-            Console.WriteLine("CONSTRUCTOR");
             AlarmOccured += OnAlarmOccured; // ovde ili u nekim metodama koje ce pozivati Trending i AlarmDisplay servisi?
             ValueChanged += OnValueChanged;
         }
 
-        public void StartInputTags()
+        public void StartInputTags(bool isStarted)
         {
-            /*foreach(KeyValuePair<string, Tag> tagMap in tags)
+            if (isStarted) return;
+            Console.WriteLine("POKRECEM INPUT TAGOVEEEEEEEEEEEEE");
+            foreach(KeyValuePair<string, Tag> tagMap in tags)
             {
                 if (tagMap.Value is AnalogInput)
                 {
@@ -47,14 +51,14 @@ namespace CoreWCFService
                     Thread thh = new Thread(() => ((DigitalInput)tagMap.Value).Start(AlarmOccured, ValueChanged));
                     thh.Start();
                 }
-            }*/         // ne znam sta se desava
+            }         // ne znam sta se desava
         }
 
         internal void OnAlarmOccured(Alarm alarm)
         {
             AddAlarmToDatabase(alarm);
             AddAlarmToTxt(alarm);
-            Console.WriteLine("ALARM OCCURED: " + alarm.TagName + " limit: " + alarm.Limit);
+            Console.WriteLine("ALARM OCCURED: " + alarm.TagName + " limit: " + alarm.Limit + ", type: " + alarm.Type);
             // dodaj callback za alarmdisplay
         }
 
@@ -72,11 +76,11 @@ namespace CoreWCFService
         {
             try
             {
-                InputTag tag = new AnalogInput(name, description, ioAddress, driver, scanTime, scanOnOff, lowLimit, highLimit, units);
+                AnalogInput tag = new AnalogInput(name, description, ioAddress, driver, scanTime, scanOnOff, lowLimit, highLimit, units);
                 tags.Add(tag.Name, tag);
                 if (AddTagToDatabase(tag) && WriteXmlConfig())
                 {
-                    Thread t = new Thread(() => tag.Start(AlarmOccured, ValueChanged));
+                    Thread t = new Thread(() => StartAnalogInputJob(tag));
                     t.Start();
                     Console.WriteLine("New tag added: " + name);
                     return true;
@@ -88,6 +92,64 @@ namespace CoreWCFService
             {
                 Console.WriteLine(e.Message);
                 return false;
+            }
+        }
+
+        private void StartAnalogInputJob(AnalogInput tag)
+        {
+            while (true)
+            {
+                lock (tagsLocker)
+                {
+                    if (tags.ContainsKey(tag.Name))
+                    {
+                        if (tag.ScanOnOff)
+                        {
+                            double oldValue = tag.Value;
+                            double newValue;
+                            double driverValue;
+                            if (tag.Driver == "Simulation Driver")
+                                driverValue = DriversLibrary.SimulationDriver.ReturnValue(tag.IOAddress);
+
+                            else if (tag.Driver == "RealTime Driver")
+                                driverValue = DriversLibrary.RealTimeDriver.ReturnValue(tag.IOAddress);
+
+                            else
+                                throw new Exception();
+
+                            if (driverValue > tag.HighLimit) newValue = tag.HighLimit;
+                            else if (driverValue < tag.LowLimit) newValue = tag.LowLimit;
+                            else newValue = driverValue;
+
+                            if (oldValue != newValue)
+                            {
+                                tag.Value = newValue;
+                                ValueChanged?.Invoke(tag);
+                            }
+                            CheckIfAlarmOccured(tag);
+                        }
+                    }
+                    else
+                    {
+                        Console.WriteLine("USAO U RETURN");
+                        return; // kill thread?
+                    }
+                }
+                Thread.Sleep(1000 * tag.ScanTime);
+            }
+        }
+
+        private void CheckIfAlarmOccured(AnalogInput tag)
+        {
+            lock (alarmsLocker)
+            {
+                foreach (var alarm in tag.Alarms)
+                {
+                    if ((alarm.Type == AlarmType.LOW && tag.Value <= alarm.Limit) || (alarm.Type == AlarmType.HIGH && tag.Value >= alarm.Limit))
+                    {
+                        AlarmOccured?.Invoke(alarm);
+                    }
+                }
             }
         }
 
@@ -116,12 +178,12 @@ namespace CoreWCFService
         {
             try
             {
-                InputTag tag = new DigitalInput(name, description, ioAddress, driver, scanTime, scanOnOff);
+                DigitalInput tag = new DigitalInput(name, description, ioAddress, driver, scanTime, scanOnOff);
                 tags.Add(tag.Name, tag);
                 if (AddTagToDatabase(tag) && WriteXmlConfig())
                 {
-                    Thread t = new Thread(() => tag.Start(AlarmOccured, ValueChanged));
-                    t.Start();
+                    Thread tDigi = new Thread(() => StartDigitalInputJob(tag));
+                    tDigi.Start();
                     Console.WriteLine("New tag added: " + name);
                     return true;
                 }
@@ -134,6 +196,41 @@ namespace CoreWCFService
             {
                 Console.WriteLine(e.Message);
                 return false;
+            }
+        }
+
+        private void StartDigitalInputJob(DigitalInput tag)
+        {
+            while (true)
+            {
+                lock (tagsLocker)
+                {
+                    if (tags.ContainsKey(tag.Name))
+                    {
+                        if (tag.ScanOnOff)
+                        {
+                            double driverValue;
+                            if (tag.Driver == "Simulation Driver")
+                                driverValue = DriversLibrary.SimulationDriver.ReturnValue(tag.IOAddress);
+
+                            else if (tag.Driver == "RealTime Driver")
+                                driverValue = DriversLibrary.RealTimeDriver.ReturnValue(tag.IOAddress);
+
+                            else
+                                throw new Exception("error error wrong driver");
+
+                            tag.Value = driverValue;
+                            ValueChanged?.Invoke(tag);
+                            // odavde sam premestio sleep zbog lock
+                        }
+                    }
+                    else
+                    {
+                        Console.WriteLine("usao u return digital");
+                        return;
+                    }
+                }
+                Thread.Sleep(1000 * tag.ScanTime);
             }
         }
 
@@ -162,18 +259,20 @@ namespace CoreWCFService
         {
             try
             {
-                AnalogInput ai = (AnalogInput)tags[name];
-                int id = FindNewAlarmId();
-                Alarm alarm = new Alarm(id, (AlarmType)Enum.Parse(typeof(AlarmType), type), priority, limit, name);
-                ai.Alarms.Add(alarm);
-                alarms.Add(alarm);
-                if (WriteXmlConfig())
+                lock (alarmsLocker)
                 {
-                    Console.WriteLine("New alarm added for tag: " + name);
-                    return true;
+                    AnalogInput ai = (AnalogInput)tags[name];
+                    int id = FindNewAlarmId();
+                    Alarm alarm = new Alarm(id, (AlarmType)Enum.Parse(typeof(AlarmType), type), priority, limit, name);
+                    ai.Alarms.Add(alarm);
+                    alarms.Add(alarm);
+                    if (WriteXmlConfig())
+                    {
+                        Console.WriteLine("New alarm added for tag: " + name);
+                        return true;
+                    }
+                    else return false;
                 }
-                else return false;
-
             } catch (Exception e)
             {
                 Console.WriteLine(e.Message);
@@ -198,21 +297,24 @@ namespace CoreWCFService
         {
             try
             {
-                foreach (Alarm alarm in alarms)
+                lock (alarmsLocker)
                 {
-                    if (alarm.Id == id)
+                    foreach (Alarm alarm in alarms)
                     {
-                        ((AnalogInput)tags[alarm.TagName]).Alarms.Remove(alarm);
-                        
-                        if (alarms.Remove(alarm) && WriteXmlConfig())
+                        if (alarm.Id == id)
                         {
-                            Console.WriteLine("Alarm deleted!");
-                            return true;
+                            ((AnalogInput)tags[alarm.TagName]).Alarms.Remove(alarm);
+
+                            if (alarms.Remove(alarm) && WriteXmlConfig())
+                            {
+                                Console.WriteLine("Alarm deleted!");
+                                return true;
+                            }
+                            else return false;
                         }
-                        else return false;
                     }
+                    return false;
                 }
-                return false;
             } catch (Exception e)
             {
                 Console.WriteLine(e.Message);
@@ -225,12 +327,15 @@ namespace CoreWCFService
         {
             try
             {
-                if (tags.Remove(tagName) && WriteXmlConfig())
+                lock (tagsLocker)
                 {
-                    Console.WriteLine("Tag removed: " + tagName);
-                    return true;
+                    if (tags.Remove(tagName) && WriteXmlConfig())   // i zaustavi sve tredove za ovaj tag
+                    {
+                        Console.WriteLine("Tag removed: " + tagName);
+                        return true;
+                    }
+                    else return false;
                 }
-                else return false;
             }
             catch (Exception e)
             {
@@ -400,6 +505,7 @@ namespace CoreWCFService
         {
             try
             {
+                Console.WriteLine("LOAD SCADA CONFIGGGGG");
                 XElement configElements = XElement.Load(CONFIG_FILE_PATH);
                 var tagConfig = configElements.Descendants("tag");
                 LoadTags(tagConfig);
