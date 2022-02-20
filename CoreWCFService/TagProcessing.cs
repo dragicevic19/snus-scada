@@ -29,26 +29,38 @@ namespace CoreWCFService
         public event AlarmHandler AlarmOccured;
         public event ValueHandler ValueChanged;
 
-        public TagProcessing()
+        private static TagProcessing Instance = null;
+
+        public static TagProcessing GetInstance()
+        {
+            if (Instance == null)
+            {
+                Instance = new TagProcessing();
+                LoadScadaConfig();
+                StartInputTags();
+            }
+            return Instance;
+        }
+
+        private TagProcessing()
         {
             AlarmOccured += OnAlarmOccured; // ovde ili u nekim metodama koje ce pozivati Trending i AlarmDisplay servisi?
             ValueChanged += OnValueChanged;
         }
 
-        public void StartInputTags(bool isStarted)
+        public static void StartInputTags()
         {
-            if (isStarted) return;
             Console.WriteLine("POKRECEM INPUT TAGOVEEEEEEEEEEEEE");
             foreach(KeyValuePair<string, Tag> tagMap in tags)
             {
                 if (tagMap.Value is AnalogInput)
                 {
-                    Thread th = new Thread (() => ((AnalogInput)tagMap.Value).Start(AlarmOccured, ValueChanged));
+                    Thread th = new Thread (() => Instance.StartAnalogInputJob(((AnalogInput)tagMap.Value)));
                     th.Start();
                 }
                 else if (tagMap.Value is DigitalInput)
                 {
-                    Thread thh = new Thread(() => ((DigitalInput)tagMap.Value).Start(AlarmOccured, ValueChanged));
+                    Thread thh = new Thread(() => Instance.StartDigitalInputJob((DigitalInput)tagMap.Value));
                     thh.Start();
                 }
             }         // ne znam sta se desava

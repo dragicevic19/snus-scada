@@ -11,7 +11,8 @@ namespace CoreWCFService
     {
         static void Main(string[] args)
         {
-            DatabaseManagerService.LoadScadaConfig();   // da li ovako da pozivam ucitavanje config fajla?
+            TagProcessing tagProcessing = TagProcessing.GetInstance();
+            // DatabaseManagerService.LoadScadaConfig();   // da li ovako da pozivam ucitavanje config fajla?
 
             ServiceHost svc = new ServiceHost(typeof(DatabaseManagerService));
             svc.Open();

@@ -16,20 +16,17 @@ namespace CoreWCFService
     [ServiceBehavior]
     public class DatabaseManagerService : IDatabaseManagerService, IAuthentication
     {
-        static bool isStarted = false;
-        TagProcessing TagProcessing = new TagProcessing();
-        // UserProcessing UserProcessing = new UserProcessing();
+        TagProcessing TagProcessing;
 
         public DatabaseManagerService()
         {
-            TagProcessing.StartInputTags(isStarted);
-            isStarted = true;
+            TagProcessing = TagProcessing.GetInstance();
         }
 
-        public static void LoadScadaConfig()
+/*        public static void LoadScadaConfig()
         {
             TagProcessing.LoadScadaConfig();
-        }
+        }*/
 
 
         public bool Registration(string username, string password)
