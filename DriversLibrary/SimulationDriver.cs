@@ -8,11 +8,6 @@ namespace DriversLibrary
 {
     public class SimulationDriver
     {
-/*        double IDriver.ReturnValue(string address)
-        {
-            return ReturnValue(address);
-        }*/
-
         public static double ReturnValue(string address)
         {
             // U ovoj implementaciji simulacionog driver-a adrese su opisne (po uzoru na iFIX)

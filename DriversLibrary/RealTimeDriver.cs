@@ -8,14 +8,23 @@ namespace DriversLibrary
 {
     public static class RealTimeDriver
     {
-/*        double IDriver.ReturnValue(string address)
-        {
-            return RealTimeDriver.ReturnValue(address);
-        }*/
+        private static Dictionary<string, double> RtuData = new Dictionary<string, double>();
 
         public static double ReturnValue(string address)
         {
-            throw new NotImplementedException();
+            try
+            {
+                return RtuData[address];
+            }
+            catch (Exception)
+            {
+                return -1000;
+            }
+        }
+
+        public static void SetRTUValue(string address, double value)
+        {
+            RtuData.Add(address, value);
         }
     }
 }

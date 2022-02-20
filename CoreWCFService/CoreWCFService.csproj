@@ -61,6 +61,8 @@
     <Compile Include="AlarmDisplay\IAlarmDisplayService.cs" />
     <Compile Include="DBManager\IAuthentication.cs" />
     <Compile Include="DBManager\IDatabaseManagerService.cs" />
+    <Compile Include="RTU\IRealTimeUnitService.cs" />
+    <Compile Include="RTU\RealTimeUnitService.cs" />
     <Compile Include="TrendingService\ITrendingService.cs" />
     <Compile Include="Model\TagDbModel\TagContext.cs" />
     <Compile Include="Model\TagDbModel\TagDb.cs" />

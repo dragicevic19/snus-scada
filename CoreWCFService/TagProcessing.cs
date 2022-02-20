@@ -62,6 +62,12 @@ namespace CoreWCFService
         {
             AlarmOccured += proxy.OnAlarmOccured;
         }
+
+        internal void SetRTUValue(string address, double value)
+        {
+            throw new NotImplementedException();
+        }
+
         internal void OnAlarmOccured(Alarm alarm, DateTime timestamp)
         {
             AddAlarmToDatabase(alarm);
