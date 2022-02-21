@@ -64,6 +64,7 @@ namespace CoreWCFService.RTU
             catch (Exception e)
             {
                 Console.WriteLine(e.Message);
+                Console.WriteLine(e.StackTrace);
                 Console.WriteLine("Something happened while trying to read message");
             }
         }

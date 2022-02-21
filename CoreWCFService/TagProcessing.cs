@@ -457,6 +457,10 @@ namespace CoreWCFService
         {
             try
             {
+                if (tags[tagName] is DigitalOutput && (value != 0 && value != 1)) return false;
+                
+                if ((tags[tagName] is AnalogInput) || (tags[tagName] is DigitalInput)) return false;
+
                 lock (tagsLocker)
                 {
                     tags[tagName].Value = value;

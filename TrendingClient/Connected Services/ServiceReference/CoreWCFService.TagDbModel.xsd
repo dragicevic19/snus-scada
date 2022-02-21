@@ -5,6 +5,7 @@
       <xs:element minOccurs="0" name="Id" type="xs:int" />
       <xs:element minOccurs="0" name="TagName" nillable="true" type="xs:string" />
       <xs:element minOccurs="0" name="TimeStamp" type="xs:dateTime" />
+      <xs:element minOccurs="0" name="Type" nillable="true" type="xs:string" />
       <xs:element minOccurs="0" name="Value" type="xs:double" />
     </xs:sequence>
   </xs:complexType>

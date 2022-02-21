@@ -32,6 +32,9 @@ namespace TrendingClient.ServiceReference {
         private System.DateTime TimeStampField;
         
         [System.Runtime.Serialization.OptionalFieldAttribute()]
+        private string TypeField;
+        
+        [System.Runtime.Serialization.OptionalFieldAttribute()]
         private double ValueField;
         
         [global::System.ComponentModel.BrowsableAttribute(false)]
@@ -79,6 +82,19 @@ namespace TrendingClient.ServiceReference {
                 if ((this.TimeStampField.Equals(value) != true)) {
                     this.TimeStampField = value;
                     this.RaisePropertyChanged("TimeStamp");
+                }
+            }
+        }
+        
+        [System.Runtime.Serialization.DataMemberAttribute()]
+        public string Type {
+            get {
+                return this.TypeField;
+            }
+            set {
+                if ((object.ReferenceEquals(this.TypeField, value) != true)) {
+                    this.TypeField = value;
+                    this.RaisePropertyChanged("Type");
                 }
             }
         }
