@@ -21,7 +21,7 @@ namespace DatabaseManagerClient
             Console.Write("Description: ");
             Description = Console.ReadLine();
 
-            Console.Write("I/O Address (S - sine, C - cosine, R - ramp) >> ");
+            Console.Write("I/O Address >> ");
             IOAddress = Console.ReadLine();
         }
     }

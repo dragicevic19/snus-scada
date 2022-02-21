@@ -126,7 +126,7 @@
       </wsp:All>
     </wsp:ExactlyOne>
   </wsp:Policy>
-  <wsp:Policy wsu:Id="WSDualHttpBinding_IAlarmDisplayService_OnAlarmOccured_output_policy">
+  <wsp:Policy wsu:Id="WSDualHttpBinding_IAlarmDisplayService_OnAlarmOccurred_output_policy">
     <wsp:ExactlyOne>
       <wsp:All>
         <sp:SignedParts xmlns:sp="http://schemas.xmlsoap.org/ws/2005/07/securitypolicy">
@@ -159,15 +159,15 @@
   <wsdl:message name="IAlarmDisplayService_Init_InputMessage">
     <wsdl:part name="parameters" element="tns:Init" />
   </wsdl:message>
-  <wsdl:message name="IAlarmDisplayService_OnAlarmOccured_OutputCallbackMessage">
-    <wsdl:part name="parameters" element="tns:OnAlarmOccured" />
+  <wsdl:message name="IAlarmDisplayService_OnAlarmOccurred_OutputCallbackMessage">
+    <wsdl:part name="parameters" element="tns:OnAlarmOccurred" />
   </wsdl:message>
   <wsdl:portType msc:usingSession="true" name="IAlarmDisplayService">
     <wsdl:operation msc:isInitiating="true" msc:isTerminating="false" name="Init">
       <wsdl:input wsaw:Action="http://tempuri.org/IAlarmDisplayService/Init" message="tns:IAlarmDisplayService_Init_InputMessage" />
     </wsdl:operation>
-    <wsdl:operation msc:isInitiating="true" msc:isTerminating="false" name="OnAlarmOccured">
-      <wsdl:output wsaw:Action="http://tempuri.org/IAlarmDisplayService/OnAlarmOccured" message="tns:IAlarmDisplayService_OnAlarmOccured_OutputCallbackMessage" />
+    <wsdl:operation msc:isInitiating="true" msc:isTerminating="false" name="OnAlarmOccurred">
+      <wsdl:output wsaw:Action="http://tempuri.org/IAlarmDisplayService/OnAlarmOccurred" message="tns:IAlarmDisplayService_OnAlarmOccurred_OutputCallbackMessage" />
     </wsdl:operation>
   </wsdl:portType>
   <wsdl:binding name="WSDualHttpBinding_IAlarmDisplayService" type="tns:IAlarmDisplayService">
@@ -180,10 +180,10 @@
         <soap12:body use="literal" />
       </wsdl:input>
     </wsdl:operation>
-    <wsdl:operation name="OnAlarmOccured">
-      <soap12:operation soapAction="http://tempuri.org/IAlarmDisplayService/OnAlarmOccured" style="document" />
+    <wsdl:operation name="OnAlarmOccurred">
+      <soap12:operation soapAction="http://tempuri.org/IAlarmDisplayService/OnAlarmOccurred" style="document" />
       <wsdl:output>
-        <wsp:PolicyReference URI="#WSDualHttpBinding_IAlarmDisplayService_OnAlarmOccured_output_policy" />
+        <wsp:PolicyReference URI="#WSDualHttpBinding_IAlarmDisplayService_OnAlarmOccurred_output_policy" />
         <soap12:body use="literal" />
       </wsdl:output>
     </wsdl:operation>

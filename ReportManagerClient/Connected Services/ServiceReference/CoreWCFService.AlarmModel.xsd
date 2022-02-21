@@ -1,0 +1,20 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<xs:schema xmlns:tns="http://schemas.datacontract.org/2004/07/CoreWCFService.AlarmModel" elementFormDefault="qualified" targetNamespace="http://schemas.datacontract.org/2004/07/CoreWCFService.AlarmModel" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+  <xs:import namespace="http://schemas.datacontract.org/2004/07/CoreWCFService" />
+  <xs:complexType name="ArrayOfAlarmDTO">
+    <xs:sequence>
+      <xs:element minOccurs="0" maxOccurs="unbounded" name="AlarmDTO" nillable="true" type="tns:AlarmDTO" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="ArrayOfAlarmDTO" nillable="true" type="tns:ArrayOfAlarmDTO" />
+  <xs:complexType name="AlarmDTO">
+    <xs:sequence>
+      <xs:element minOccurs="0" name="Id" type="xs:int" />
+      <xs:element minOccurs="0" name="Priority" type="xs:int" />
+      <xs:element minOccurs="0" name="TagName" nillable="true" type="xs:string" />
+      <xs:element minOccurs="0" name="TimeStamp" type="xs:dateTime" />
+      <xs:element xmlns:q1="http://schemas.datacontract.org/2004/07/CoreWCFService" minOccurs="0" name="Type" type="q1:AlarmType" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="AlarmDTO" nillable="true" type="tns:AlarmDTO" />
+</xs:schema>

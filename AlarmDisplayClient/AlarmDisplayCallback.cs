@@ -9,11 +9,11 @@ namespace AlarmDisplayClient
 {
     public class AlarmDisplayCallback : IAlarmDisplayServiceCallback
     {
-        public void OnAlarmOccured(Alarm a, DateTime timeStamp)
+        public void OnAlarmOccurred(Alarm a, DateTime timeStamp)
         {
             for (int i = 0; i < a.Priority; i++)
             {
-                Console.WriteLine("Alarm occured --> TAG NAME: " + a.TagName + ", type: " + a.Type + ", TIME: " + timeStamp);
+                Console.WriteLine("Alarm occurred --> TAG NAME: " + a.TagName + ", type: " + a.Type + ", TIME: " + timeStamp);
             }
             Console.WriteLine("\n");
         }

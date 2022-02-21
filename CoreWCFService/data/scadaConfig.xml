@@ -1,10 +1,14 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <root>
   <tag type="DigitalOutput" name="digiOut" description="digital output ttag for testting" ioAddress="R" initValue="0" />
-  <tag type="AnalogInput" name="slowAnalog" description="sad" driver="Simulation Driver" ioAddress="R" scanTime="8" scanOnOff="false" lowLimit="1" highLimit="100" units="m" />
+  <tag type="AnalogInput" name="slowAnalog" description="sad" driver="Simulation Driver" ioAddress="R" scanTime="8" scanOnOff="true" lowLimit="1" highLimit="100" units="m" />
   <alarm id="4" type="HIGH" priority="3" limit="95" tagName="slowAnalog" />
   <alarm id="6" type="LOW" priority="1" limit="10" tagName="slowAnalog" />
   <alarm id="8" type="HIGH" priority="3" limit="85" tagName="slowAnalog" />
   <tag type="DigitalInput" name="slowDigital" description="djksal" driver="Simulation Driver" ioAddress="R" scanTime="10" scanOnOff="false" />
   <tag type="DigitalInput" name="digitest" description="didsadkjl" driver="Simulation Driver" ioAddress="R" scanTime="5" scanOnOff="false" />
+  <tag type="AnalogInput" name="testRTU" description="rtestiram rtu" driver="RealTime Driver" ioAddress="test" scanTime="3" scanOnOff="true" lowLimit="10" highLimit="100" units="l" />
+  <alarm id="9" type="LOW" priority="2" limit="15" tagName="testRTU" />
+  <alarm id="10" type="HIGH" priority="2" limit="75" tagName="testRTU" />
+  <tag type="DigitalInput" name="tagtestdigirtu" description="sdajkljk" driver="RealTime Driver" ioAddress="test2" scanTime="2" scanOnOff="true" />
 </root>

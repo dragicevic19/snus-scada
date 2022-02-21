@@ -13,9 +13,10 @@ namespace CoreWCFService.TagDbModel
         [Key]
         public int Id { get; set; }
 
-        // [Index(IsUnique = true)]
         [StringLength(20)]
         public string TagName { get; set; }
+
+        public string Type { get; set; }
 
         public double Value { get; set; }
 
@@ -23,9 +24,10 @@ namespace CoreWCFService.TagDbModel
 
         public TagDb() { }
 
-        public TagDb(string tagName, double value, DateTime timeStamp)
+        public TagDb(string tagName, string type, double value, DateTime timeStamp)
         {
             TagName = tagName;
+            Type = type;
             Value = value;
             TimeStamp = timeStamp;
         }

@@ -1,0 +1,87 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<xs:schema xmlns:tns="http://tempuri.org/" elementFormDefault="qualified" targetNamespace="http://tempuri.org/" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+  <xs:import namespace="http://schemas.datacontract.org/2004/07/CoreWCFService.AlarmModel" />
+  <xs:import namespace="http://schemas.datacontract.org/2004/07/CoreWCFService.TagDbModel" />
+  <xs:element name="AlarmsOverAPeriodOfTime">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" name="start" type="xs:dateTime" />
+        <xs:element minOccurs="0" name="end" type="xs:dateTime" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="AlarmsOverAPeriodOfTimeResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element xmlns:q1="http://schemas.datacontract.org/2004/07/CoreWCFService.AlarmModel" minOccurs="0" name="AlarmsOverAPeriodOfTimeResult" nillable="true" type="q1:ArrayOfAlarmDTO" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="AlarmsWithPriority">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" name="priority" type="xs:int" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="AlarmsWithPriorityResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element xmlns:q2="http://schemas.datacontract.org/2004/07/CoreWCFService.AlarmModel" minOccurs="0" name="AlarmsWithPriorityResult" nillable="true" type="q2:ArrayOfAlarmDTO" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="TagsOverAPeriodOfTime">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" name="start" type="xs:dateTime" />
+        <xs:element minOccurs="0" name="end" type="xs:dateTime" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="TagsOverAPeriodOfTimeResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element xmlns:q3="http://schemas.datacontract.org/2004/07/CoreWCFService.TagDbModel" minOccurs="0" name="TagsOverAPeriodOfTimeResult" nillable="true" type="q3:ArrayOfTagDb" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="LastValueOfAnalogInputTags">
+    <xs:complexType>
+      <xs:sequence />
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="LastValueOfAnalogInputTagsResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element xmlns:q4="http://schemas.datacontract.org/2004/07/CoreWCFService.TagDbModel" minOccurs="0" name="LastValueOfAnalogInputTagsResult" nillable="true" type="q4:ArrayOfTagDb" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="LastValueOfDigitalInputTags">
+    <xs:complexType>
+      <xs:sequence />
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="LastValueOfDigitalInputTagsResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element xmlns:q5="http://schemas.datacontract.org/2004/07/CoreWCFService.TagDbModel" minOccurs="0" name="LastValueOfDigitalInputTagsResult" nillable="true" type="q5:ArrayOfTagDb" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="AllValuesOfTagWithTagName">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" name="tagName" nillable="true" type="xs:string" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="AllValuesOfTagWithTagNameResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element xmlns:q6="http://schemas.datacontract.org/2004/07/CoreWCFService.TagDbModel" minOccurs="0" name="AllValuesOfTagWithTagNameResult" nillable="true" type="q6:ArrayOfTagDb" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+</xs:schema>

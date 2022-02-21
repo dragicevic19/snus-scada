@@ -17,6 +17,6 @@ namespace CoreWCFService
     public interface IAlarmDisplayCallback
     {
         [OperationContract(IsOneWay = true)]
-        void OnAlarmOccured(Alarm a, DateTime timeStamp);
+        void OnAlarmOccurred(Alarm a, DateTime timeStamp);
     }
 }

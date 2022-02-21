@@ -17,7 +17,6 @@ namespace CoreWCFService
         const string CONFIG_FILE_PATH = @"../../data/scadaConfig.xml";
         const string ALARM_TXT_PATH = @"../../data/alarmLog.txt";
 
-
         private static Dictionary<string, Tag> tags = new Dictionary<string, Tag>();    // key is TagName
         static readonly object tagsLocker = new object();
 
@@ -30,7 +29,7 @@ namespace CoreWCFService
         public delegate void AlarmHandler(Alarm alarm, DateTime timeStamp);
         public delegate void ValueHandler(TagDb tag);
 
-        public event AlarmHandler AlarmOccured;
+        public event AlarmHandler AlarmOccurred;
         public event ValueHandler ValueChanged;
 
         private static TagProcessing Instance = null;
@@ -48,37 +47,9 @@ namespace CoreWCFService
 
         private TagProcessing()
         {
-            AlarmOccured += OnAlarmOccured;
+            AlarmOccurred += OnAlarmOccurred;
             ValueChanged += OnValueChanged;
         }
-
-        #region eventHandlers
-
-        internal void AddProxyForTrending(ITrendingCallback proxy)
-        {
-            ValueChanged += proxy.OnValueChanged;
-        }
-        internal void AddProxyForAlarmDisplay(IAlarmDisplayCallback proxy)
-        {
-            AlarmOccured += proxy.OnAlarmOccured;
-        }
-
-        internal void SetRTUValue(string address, double value)
-        {
-            throw new NotImplementedException();
-        }
-
-        internal void OnAlarmOccured(Alarm alarm, DateTime timestamp)
-        {
-            AddAlarmToDatabase(alarm);
-            AddAlarmToTxt(alarm);
-        }
-        internal void OnValueChanged(TagDb tag)
-        {
-            AddTagToDatabase(tag);
-        }
-
-        #endregion
 
         public static void StartInputTags()
         {
@@ -106,6 +77,29 @@ namespace CoreWCFService
             }
         }
 
+        #region eventHandlers
+
+        internal void AddProxyForTrending(ITrendingCallback proxy)
+        {
+            ValueChanged += proxy.OnValueChanged;
+        }
+        internal void AddProxyForAlarmDisplay(IAlarmDisplayCallback proxy)
+        {
+            AlarmOccurred += proxy.OnAlarmOccurred;
+        }
+
+        internal void OnAlarmOccurred(Alarm alarm, DateTime timestamp)
+        {
+            AddAlarmToDatabase(alarm);
+            AddAlarmToTxt(alarm);
+        }
+        internal void OnValueChanged(TagDb tag)
+        {
+            AddTagToDatabase(tag);
+        }
+
+        #endregion
+
         #region tags
         internal bool AddAnalogInputTag(string name, string description, string driver, string ioAddress, int scanTime, bool scanOnOff, double lowLimit, double highLimit, string units)
         {
@@ -116,7 +110,7 @@ namespace CoreWCFService
                 {
                     tags.Add(tag.Name, tag);
                 }
-                if (AddTagToDatabase(new TagDb(tag.Name, tag.Value, DateTime.Now)) && WriteXmlConfig())
+                if (AddTagToDatabase(new TagDb(tag.Name, tag.GetType().Name, tag.Value, DateTime.Now)) && WriteXmlConfig())
                 {
                     Thread t = new Thread(() => StartAnalogInputJob(tag));
                     t.Start();
@@ -137,50 +131,6 @@ namespace CoreWCFService
             }
         }
 
-        /*private void StartAnalogInputJob(AnalogInput tag)
-        {
-            while (true)
-            {
-                lock (tagsLocker)
-                {
-                    if (tags.ContainsKey(tag.Name))
-                    {
-                        if (tag.ScanOnOff)
-                        {
-                            double oldValue = tag.Value;
-                            double newValue;
-                            double driverValue;
-                            if (tag.Driver == "Simulation Driver")
-                                driverValue = DriversLibrary.SimulationDriver.ReturnValue(tag.IOAddress);
-
-                            else if (tag.Driver == "RealTime Driver")
-                                driverValue = DriversLibrary.RealTimeDriver.ReturnValue(tag.IOAddress);
-
-                            else
-                                throw new Exception();
-
-                            if (driverValue > tag.HighLimit) newValue = tag.HighLimit;
-                            else if (driverValue < tag.LowLimit) newValue = tag.LowLimit;
-                            else newValue = driverValue;
-
-                            if (oldValue != newValue)
-                            {
-                                tag.Value = newValue;
-                                ValueChanged?.Invoke(tag, DateTime.Now);
-                            }
-                            CheckIfAlarmOccured(tag);
-                        }
-                    }
-                    else
-                    {
-                        Console.WriteLine("USAO U RETURN");
-                        return; // kill thread?
-                    }
-                }
-                Thread.Sleep(1000 * tag.ScanTime);
-            }
-        }*/
-
         private void StartAnalogInputJob(AnalogInput tag)
         {
             while (true)
@@ -199,8 +149,14 @@ namespace CoreWCFService
                     else
                         throw new Exception();
 
-                    if (driverValue > tag.HighLimit) newValue = tag.HighLimit;
-                    else if (driverValue < tag.LowLimit) newValue = tag.LowLimit;
+                    if (driverValue == -1000) continue;
+
+                    if (driverValue > tag.HighLimit) 
+                        newValue = tag.HighLimit;
+
+                    else if (driverValue < tag.LowLimit) 
+                        newValue = tag.LowLimit;
+
                     else newValue = driverValue;
 
                     if (oldValue != newValue)
@@ -209,20 +165,21 @@ namespace CoreWCFService
                         {
                             tag.Value = newValue;
                         }
-                        ValueChanged?.Invoke(new TagDb(tag.Name, tag.Value, DateTime.Now));
+                        ValueChanged?.Invoke(new TagDb(tag.Name, tag.GetType().Name, tag.Value, DateTime.Now));
                     }
-                    CheckIfAlarmOccured(tag);
+                    CheckIfAlarmOccurred(tag);
                     Thread.Sleep(1000 * tag.ScanTime);
                 }
             }
         }
-        private void CheckIfAlarmOccured(AnalogInput tag)
+
+        private void CheckIfAlarmOccurred(AnalogInput tag)
         {
             foreach (var alarm in tag.Alarms)
             {
                 if ((alarm.Type == AlarmType.LOW && tag.Value <= alarm.Limit) || (alarm.Type == AlarmType.HIGH && tag.Value >= alarm.Limit))
                 {
-                    AlarmOccured?.Invoke(alarm, DateTime.Now);
+                    AlarmOccurred?.Invoke(alarm, DateTime.Now);
                 }
             }
         }
@@ -236,7 +193,7 @@ namespace CoreWCFService
                 {
                     tags.Add(tag.Name, tag);
                 }
-                if (AddTagToDatabase(new TagDb(tag.Name, tag.Value, DateTime.Now)) && WriteXmlConfig())
+                if (AddTagToDatabase(new TagDb(tag.Name, tag.GetType().Name, tag.Value, DateTime.Now)) && WriteXmlConfig())
                 {
                     Console.WriteLine("New tag added: " + name);
                     return true;
@@ -260,7 +217,7 @@ namespace CoreWCFService
                 {
                     tags.Add(tag.Name, tag);
                 }
-                if (AddTagToDatabase(new TagDb(tag.Name, tag.Value, DateTime.Now)) && WriteXmlConfig())
+                if (AddTagToDatabase(new TagDb(tag.Name, tag.GetType().Name, tag.Value, DateTime.Now)) && WriteXmlConfig())
                 {
                     Thread tDigi = new Thread(() => StartDigitalInputJob(tag));
                     tDigi.Start();
@@ -282,41 +239,6 @@ namespace CoreWCFService
                 return false;
             }
         }
-/*
-        private void StartDigitalInputJob(DigitalInput tag)
-        {
-            while (true)
-            {
-                lock (tagsLocker)
-                {
-                    if (tags.ContainsKey(tag.Name))
-                    {
-                        if (tag.ScanOnOff)
-                        {
-                            double driverValue;
-                            if (tag.Driver == "Simulation Driver")
-                                driverValue = DriversLibrary.SimulationDriver.ReturnValue(tag.IOAddress);
-
-                            else if (tag.Driver == "RealTime Driver")
-                                driverValue = DriversLibrary.RealTimeDriver.ReturnValue(tag.IOAddress);
-
-                            else
-                                throw new Exception("error error wrong driver");
-
-                            tag.Value = driverValue;
-                            ValueChanged?.Invoke(tag, DateTime.Now);
-                            // odavde sam premestio sleep zbog lock
-                        }
-                    }
-                    else
-                    {
-                        Console.WriteLine("usao u return digital");
-                        return;
-                    }
-                }
-                Thread.Sleep(1000 * tag.ScanTime);
-            }
-        }*/
 
         private void StartDigitalInputJob(DigitalInput tag)
         {
@@ -333,11 +255,13 @@ namespace CoreWCFService
 
                     else
                         throw new Exception("error error wrong driver");
+
+                    if (driverValue == -1000) continue;
                     lock (tagsLocker)
                     {
                         tag.Value = driverValue;
                     }
-                    ValueChanged?.Invoke(new TagDb(tag.Name, tag.Value, DateTime.Now));
+                    ValueChanged?.Invoke(new TagDb(tag.Name, tag.GetType().Name, tag.Value, DateTime.Now));
                     Thread.Sleep(1000 * tag.ScanTime);
                 }
             }
@@ -352,7 +276,7 @@ namespace CoreWCFService
                 {
                     tags.Add(tag.Name, tag);
                 }
-                if (AddTagToDatabase(new TagDb(tag.Name, tag.Value, DateTime.Now)) && WriteXmlConfig())
+                if (AddTagToDatabase(new TagDb(tag.Name, tag.GetType().Name, tag.Value, DateTime.Now)) && WriteXmlConfig())
                 {
                     Console.WriteLine("New tag added: " + name);
                     return true;
@@ -537,7 +461,8 @@ namespace CoreWCFService
                 {
                     tags[tagName].Value = value;
                 }
-                if (AddTagToDatabase(new TagDb(tags[tagName].Name, tags[tagName].Value, DateTime.Now)))
+
+                if (AddTagToDatabase(new TagDb(tags[tagName].Name, tags[tagName].Value.GetType().Name, tags[tagName].Value, DateTime.Now)))
                 {
                     Console.WriteLine("Value changed on tag: " + tagName + ", to a new value: " + value);
                     return true;
@@ -658,8 +583,14 @@ namespace CoreWCFService
             foreach (var a in alarmConfig)
             {
                 Alarm alarm = Alarm.MakeAlarmFromConfigFile(a);
-                ((AnalogInput)tags[alarm.TagName]).Alarms.Add(alarm);
-                alarms.Add(alarm);
+                lock (tagsLocker)
+                {
+                    ((AnalogInput)tags[alarm.TagName]).Alarms.Add(alarm);
+                }
+                lock (alarmsLocker)
+                {
+                    alarms.Add(alarm);
+                }
             }
         }
 
@@ -669,7 +600,9 @@ namespace CoreWCFService
             {
                 Tag tag = Tag.MakeTagFromConfigFile(t);
                 if (tag is InputTag) FindValueOfTag(ref tag);
-                tags.Add(tag.Name, tag);
+                lock (tagsLocker) {
+                    tags.Add(tag.Name, tag);
+                }
             }
         }
 
@@ -688,8 +621,11 @@ namespace CoreWCFService
             }
             if (allTags.Count == 0) return;
 
-            TagDb last = allTags.Last(); // bar se nadam da u bazi pakuje po redosledu upisivanja
-            tag.Value = last.Value;
+            TagDb last = allTags.Last();
+            lock (tagsLocker)
+            {
+                tag.Value = last.Value;
+            }
         }
 
         #endregion
@@ -719,7 +655,7 @@ namespace CoreWCFService
             {
                 try
                 {
-                    db.Alarms.Add(new AlarmDTO(alarm.TagName, alarm.Type, DateTime.Now));
+                    db.Alarms.Add(new AlarmDTO(alarm.TagName, alarm.Type, DateTime.Now, alarm.Priority));
                     db.SaveChanges();
                     return true;
                 }
@@ -735,11 +671,147 @@ namespace CoreWCFService
         {
             try
             {
-                File.AppendAllText(ALARM_TXT_PATH, alarm.Id + "|" + alarm.TagName + "|" + alarm.Type + "|" + DateTime.Now + Environment.NewLine);
+                File.AppendAllText(ALARM_TXT_PATH, alarm.Id + "|" + alarm.TagName + "|" + alarm.Type + "|" + alarm.Priority + "|" + DateTime.Now + Environment.NewLine);
             }
             catch (Exception e)
             {
                 Console.WriteLine(e.Message);
+            }
+        }
+        #endregion
+
+        #region reports
+        internal AlarmDTO[] GetAlarmsOverAPeriodOfTime(DateTime start,  DateTime end)
+        {
+            try
+            {
+                using (var db = new AlarmContext())
+                {
+                    var query =
+                        from alarm in db.Alarms
+                        where alarm.TimeStamp >= start && alarm.TimeStamp <= end
+                        select alarm;
+
+                    return query.OrderByDescending(a => a.Priority).ThenByDescending(a => a.TimeStamp).ToArray();
+                }
+            } catch (Exception e)
+            {
+                Console.WriteLine(e.Message);
+                return null;
+            }
+        }
+
+        internal AlarmDTO[] GetAlarmsWithCertainPriority(int priority)
+        {
+            try
+            {
+                using (var db = new AlarmContext())
+                {
+                    var query =
+                        from alarm in db.Alarms
+                        where alarm.Priority == priority
+                        select alarm;
+
+                    return query.OrderByDescending(a => a.TimeStamp).ToArray();
+                }
+            } catch (Exception e)
+            {
+                Console.WriteLine(e.Message);
+                return null;
+            }
+}
+
+        internal TagDb[] GetTagsOverAPeriodOfTime(DateTime start, DateTime end)
+        {
+            try
+            {
+                using (var db = new TagContext())
+                {
+                    var query =
+                        from tag in db.Tags
+                        where tag.TimeStamp >= start && tag.TimeStamp <= end
+                        select tag;
+
+                    return query.OrderByDescending(t => t.TimeStamp).ToArray();
+                }
+            } catch(Exception e)
+            {
+                Console.WriteLine(e.Message);
+                return null;
+            }
+        }
+
+        internal TagDb[] GetTagsWithCertainTagName(string tagName)
+        {
+            try
+            {
+                using (var db = new TagContext())
+                {
+                    var query =
+                        from tag in db.Tags
+                        where tag.TagName == tagName
+                        select tag;
+
+                    return query.OrderByDescending(t => t.TimeStamp).ToArray();
+                }
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e.Message);
+                return null;
+            }
+        }
+
+        internal TagDb[] GetLastValueOfDITags()
+        {
+            Dictionary<string, TagDb> ret = new Dictionary<string, TagDb>();
+            
+            try
+            {
+                using (var db = new TagContext())
+                {
+                    var query =
+                        from tag in db.Tags
+                        where tag.Type == typeof(DigitalInput).Name
+                        select tag;
+
+                    foreach (var q in query.OrderByDescending(m => m.TagName).ThenBy(m => m.TimeStamp))
+                    {
+                        ret[q.TagName] = q;
+                    }
+
+                    return ret.Values.OrderByDescending(m => m.TimeStamp).ToArray();
+                }
+            } catch(Exception e)
+            {
+                Console.WriteLine(e.Message);
+                return null;
+            }
+        }
+
+        internal TagDb[] GetLastValueOfAITags()
+        {
+            try
+            {
+                Dictionary<string, TagDb> ret = new Dictionary<string, TagDb>();
+                using (var db = new TagContext())
+                {
+                    var query =
+                        from tag in db.Tags
+                        where tag.Type == typeof(AnalogInput).Name
+                        select tag;
+
+                    foreach (var q in query.OrderByDescending(m => m.TagName).ThenBy(m => m.TimeStamp))
+                    {
+                        ret[q.TagName] = q;
+                    }
+
+                    return ret.Values.OrderByDescending(m => m.TimeStamp).ToArray();
+                }
+            } catch (Exception e)
+            {
+                Console.WriteLine(e.Message);
+                return null;
             }
         }
         #endregion

@@ -15,6 +15,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AlarmDisplayClient", "Alarm
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RealTimeUnit", "RealTimeUnit\RealTimeUnit.csproj", "{3F85FE07-BE94-421F-B2A0-D8BAFD5AE927}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ReportManagerClient", "ReportManagerClient\ReportManagerClient.csproj", "{96909A70-6F79-4AF9-98C2-D442FCDAD971}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -45,6 +47,10 @@ Global
 		{3F85FE07-BE94-421F-B2A0-D8BAFD5AE927}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{3F85FE07-BE94-421F-B2A0-D8BAFD5AE927}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{3F85FE07-BE94-421F-B2A0-D8BAFD5AE927}.Release|Any CPU.Build.0 = Release|Any CPU
+		{96909A70-6F79-4AF9-98C2-D442FCDAD971}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{96909A70-6F79-4AF9-98C2-D442FCDAD971}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{96909A70-6F79-4AF9-98C2-D442FCDAD971}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{96909A70-6F79-4AF9-98C2-D442FCDAD971}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

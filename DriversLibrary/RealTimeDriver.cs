@@ -24,7 +24,7 @@ namespace DriversLibrary
 
         public static void SetRTUValue(string address, double value)
         {
-            RtuData.Add(address, value);
+            RtuData[address] = value;
         }
     }
 }

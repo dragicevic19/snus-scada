@@ -12,7 +12,7 @@ namespace TrendingClient
     {
         public void OnValueChanged(TagDb tag)
         {
-            Console.WriteLine("Value changed --> TAG NAME: " + tag.TagName + ", VALUE: " + tag.Value + ", TIME: " + tag.TimeStamp);
+            Console.WriteLine($"Value changed --> TAG NAME: {tag.TagName}, type: {tag.Type}, value: {tag.Value}, time: {tag.TimeStamp}");
         }
     }
 }

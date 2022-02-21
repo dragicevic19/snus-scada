@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ReferenceGroup xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" ID="efabf9a5-8c76-4b55-bf19-89e8d03eeade" xmlns="urn:schemas-microsoft-com:xml-wcfservicemap">
+  <ClientOptions>
+    <GenerateAsynchronousMethods>false</GenerateAsynchronousMethods>
+    <GenerateTaskBasedAsynchronousMethod>true</GenerateTaskBasedAsynchronousMethod>
+    <EnableDataBinding>true</EnableDataBinding>
+    <ExcludedTypes />
+    <ImportXmlTypes>false</ImportXmlTypes>
+    <GenerateInternalTypes>false</GenerateInternalTypes>
+    <GenerateMessageContracts>false</GenerateMessageContracts>
+    <NamespaceMappings />
+    <CollectionMappings />
+    <GenerateSerializableTypes>true</GenerateSerializableTypes>
+    <Serializer>Auto</Serializer>
+    <UseSerializerForFaults>true</UseSerializerForFaults>
+    <ReferenceAllAssemblies>true</ReferenceAllAssemblies>
+    <ReferencedAssemblies />
+    <ReferencedDataContractTypes />
+    <ServiceContractMappings />
+  </ClientOptions>
+  <MetadataSources>
+    <MetadataSource Address="http://localhost:8000/ReportManager/mex" Protocol="mex" SourceId="1" />
+  </MetadataSources>
+  <Metadata>
+    <MetadataFile FileName="service.wsdl" MetadataType="Wsdl" ID="8b8d8e63-1c77-44c2-b548-630f33993b37" SourceId="1" SourceUrl="http://localhost:8000/ReportManager/mex" />
+    <MetadataFile FileName="service.xsd" MetadataType="Schema" ID="2479ab7a-6f85-432d-aa05-ce8845477f50" SourceId="1" SourceUrl="http://localhost:8000/ReportManager/mex" />
+    <MetadataFile FileName="service1.xsd" MetadataType="Schema" ID="5778540c-80b2-455e-8f7d-c7ffe39e4ad8" SourceId="1" SourceUrl="http://localhost:8000/ReportManager/mex" />
+    <MetadataFile FileName="CoreWCFService.AlarmModel.xsd" MetadataType="Schema" ID="07d6172a-4d14-46ff-b5e7-c35b501c9b5d" SourceId="1" SourceUrl="http://localhost:8000/ReportManager/mex" />
+    <MetadataFile FileName="CoreWCFService.xsd" MetadataType="Schema" ID="af7649cd-5618-452d-be82-8bedad274b3a" SourceId="1" SourceUrl="http://localhost:8000/ReportManager/mex" />
+    <MetadataFile FileName="CoreWCFService.TagDbModel.xsd" MetadataType="Schema" ID="428124c5-a5a5-4544-8ca8-f9e132c37f9a" SourceId="1" SourceUrl="http://localhost:8000/ReportManager/mex" />
+  </Metadata>
+  <Extensions>
+    <ExtensionFile FileName="configuration91.svcinfo" Name="configuration91.svcinfo" />
+    <ExtensionFile FileName="configuration.svcinfo" Name="configuration.svcinfo" />
+  </Extensions>
+</ReferenceGroup>

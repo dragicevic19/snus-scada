@@ -4,7 +4,10 @@ using System.Linq;
 using System.ServiceModel;
 using System.Text;
 using System.Threading.Tasks;
+using CoreWCFService.AlarmModel;
+using CoreWCFService.Reports;
 using CoreWCFService.RTU;
+using CoreWCFService.TagModel;
 
 namespace CoreWCFService
 {
@@ -22,6 +25,8 @@ namespace CoreWCFService
             svcAlarm.Open();
             ServiceHost svcRTU = new ServiceHost(typeof(RealTimeUnitService));
             svcRTU.Open();
+            ServiceHost svcReport = new ServiceHost(typeof(ReportManagerService));
+            svcReport.Open();
 
             Console.WriteLine("Service is ready...");
             Console.ReadKey();
@@ -30,6 +35,7 @@ namespace CoreWCFService
             svcTrending.Close();
             svcAlarm.Close();
             svcRTU.Close();
+            svcReport.Close();
         }
     }
 }

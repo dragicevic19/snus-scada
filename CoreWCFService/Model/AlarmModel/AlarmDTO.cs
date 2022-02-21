@@ -14,12 +14,14 @@ namespace CoreWCFService.AlarmModel
         public string TagName { get; set; }
         public AlarmType Type { get; set; }
         public DateTime TimeStamp { get; set; }
+        public int Priority { get; set; }
 
-        public AlarmDTO(string tagName, AlarmType type, DateTime timeStamp)
+        public AlarmDTO(string tagName, AlarmType type, DateTime timeStamp, int priority)
         {
             TagName = tagName;
             Type = type;
             TimeStamp = timeStamp;
+            Priority = priority;
         }
 
         public AlarmDTO() { }

@@ -55,12 +55,23 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AlarmDisplay\AlarmDisplayService.cs" />
+    <Compile Include="Migrations\202202191722593_InitialCreate.cs" />
+    <Compile Include="Migrations\202202191722593_InitialCreate.designer.cs">
+      <DependentUpon>202202191722593_InitialCreate.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202202211417359_AddPriority.cs" />
+    <Compile Include="Migrations\202202211417359_AddPriority.designer.cs">
+      <DependentUpon>202202211417359_AddPriority.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Model\AlarmModel\AlarmContext.cs" />
     <Compile Include="Model\AlarmModel\AlarmDTO.cs" />
     <Compile Include="DBManager\DataBaseManagerService.cs" />
     <Compile Include="AlarmDisplay\IAlarmDisplayService.cs" />
     <Compile Include="DBManager\IAuthentication.cs" />
     <Compile Include="DBManager\IDatabaseManagerService.cs" />
+    <Compile Include="Reports\IReportManagerService.cs" />
+    <Compile Include="Reports\ReportManagerService.cs" />
     <Compile Include="RTU\IRealTimeUnitService.cs" />
     <Compile Include="RTU\RealTimeUnitService.cs" />
     <Compile Include="TrendingService\ITrendingService.cs" />
@@ -92,6 +103,14 @@
       <Project>{74b6b34f-8a25-4353-b637-bf95befa45e7}</Project>
       <Name>DriversLibrary</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Migrations\202202191722593_InitialCreate.resx">
+      <DependentUpon>202202191722593_InitialCreate.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202202211417359_AddPriority.resx">
+      <DependentUpon>202202211417359_AddPriority.cs</DependentUpon>
+    </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">

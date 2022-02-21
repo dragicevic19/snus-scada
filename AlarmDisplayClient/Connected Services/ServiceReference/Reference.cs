@@ -147,8 +147,8 @@ namespace AlarmDisplayClient.ServiceReference {
     [System.CodeDom.Compiler.GeneratedCodeAttribute("System.ServiceModel", "4.0.0.0")]
     public interface IAlarmDisplayServiceCallback {
         
-        [System.ServiceModel.OperationContractAttribute(IsOneWay=true, Action="http://tempuri.org/IAlarmDisplayService/OnAlarmOccured")]
-        void OnAlarmOccured(AlarmDisplayClient.ServiceReference.Alarm a, System.DateTime timeStamp);
+        [System.ServiceModel.OperationContractAttribute(IsOneWay=true, Action="http://tempuri.org/IAlarmDisplayService/OnAlarmOccurred")]
+        void OnAlarmOccurred(AlarmDisplayClient.ServiceReference.Alarm a, System.DateTime timeStamp);
     }
     
     [System.CodeDom.Compiler.GeneratedCodeAttribute("System.ServiceModel", "4.0.0.0")]
