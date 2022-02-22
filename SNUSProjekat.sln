@@ -6,16 +6,31 @@ MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CoreWCFService", "CoreWCFService\CoreWCFService.csproj", "{4CDED4EA-EE94-42CC-810F-83C95AC65AD2}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DatabaseManagerClient", "DatabaseManagerClient\DatabaseManagerClient.csproj", "{F98638D6-077C-4D18-A4C1-F0F1BCB2B3F0}"
+	ProjectSection(ProjectDependencies) = postProject
+		{4CDED4EA-EE94-42CC-810F-83C95AC65AD2} = {4CDED4EA-EE94-42CC-810F-83C95AC65AD2}
+	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DriversLibrary", "DriversLibrary\DriversLibrary.csproj", "{74B6B34F-8A25-4353-B637-BF95BEFA45E7}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TrendingClient", "TrendingClient\TrendingClient.csproj", "{D43E29F5-EBC6-4030-8DA7-5C9105F975A3}"
+	ProjectSection(ProjectDependencies) = postProject
+		{4CDED4EA-EE94-42CC-810F-83C95AC65AD2} = {4CDED4EA-EE94-42CC-810F-83C95AC65AD2}
+	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AlarmDisplayClient", "AlarmDisplayClient\AlarmDisplayClient.csproj", "{744EF9A3-19CF-4A94-89A7-F6259D2BA227}"
+	ProjectSection(ProjectDependencies) = postProject
+		{4CDED4EA-EE94-42CC-810F-83C95AC65AD2} = {4CDED4EA-EE94-42CC-810F-83C95AC65AD2}
+	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RealTimeUnit", "RealTimeUnit\RealTimeUnit.csproj", "{3F85FE07-BE94-421F-B2A0-D8BAFD5AE927}"
+	ProjectSection(ProjectDependencies) = postProject
+		{4CDED4EA-EE94-42CC-810F-83C95AC65AD2} = {4CDED4EA-EE94-42CC-810F-83C95AC65AD2}
+	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ReportManagerClient", "ReportManagerClient\ReportManagerClient.csproj", "{96909A70-6F79-4AF9-98C2-D442FCDAD971}"
+	ProjectSection(ProjectDependencies) = postProject
+		{4CDED4EA-EE94-42CC-810F-83C95AC65AD2} = {4CDED4EA-EE94-42CC-810F-83C95AC65AD2}
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

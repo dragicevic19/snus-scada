@@ -15,10 +15,11 @@ namespace CoreWCFService.RTU
         private static CspParameters csp;
         private static RSACryptoServiceProvider rsa;
 
-        private Dictionary<int, string> PubKeys = new Dictionary<int, string>();
+        private static Dictionary<int, string> PubKeys = new Dictionary<int, string>();
         static readonly object pubKeysLocker = new object();
 
         static int pubId = 0;
+        static readonly object cspLocker = new object();
         static readonly object pubIdlocker = new object();
 
         static readonly object rtuLocker = new object();
@@ -43,7 +44,11 @@ namespace CoreWCFService.RTU
         {
             try
             {
-                string path = PubKeys[pubId];
+                string path;
+                lock (pubKeysLocker)
+                {
+                    path = PubKeys[pubId];
+                }
                 ImportPublicKey(path);
 
                 if (VerifySignedMessage(message, signature))
@@ -76,10 +81,13 @@ namespace CoreWCFService.RTU
             {
                 using (StreamReader reader = new StreamReader(path))
                 {
-                    csp = new CspParameters();
-                    rsa = new RSACryptoServiceProvider(csp);
-                    string publicKeyText = reader.ReadToEnd();
-                    rsa.FromXmlString(publicKeyText);
+                    lock (cspLocker)
+                    {
+                        csp = new CspParameters();
+                        rsa = new RSACryptoServiceProvider(csp);
+                        string publicKeyText = reader.ReadToEnd();
+                        rsa.FromXmlString(publicKeyText);
+                    }
                 }
             }
             else
