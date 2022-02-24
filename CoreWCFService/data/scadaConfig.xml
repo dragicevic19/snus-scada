@@ -12,6 +12,13 @@
   <tag type="DigitalInput" name="tagtestdigirtu" description="sdajkljk" driver="RealTime Driver" ioAddress="test2" scanTime="2" scanOnOff="false" />
   <tag type="AnalogOutput" name="outtestanal" description="output analog tag test" ioAddress="S" initValue="5" lowLimit="0" highLimit="100" units="m" />
   <tag type="DigitalOutput" name="digiouttest" description="test test digi" ioAddress="2" initValue="0" />
-  <tag type="AnalogInput" name="INPUTANALOG" description="test rtu input analog" driver="RealTime Driver" ioAddress="test3" scanTime="10" scanOnOff="true" lowLimit="10" highLimit="90" units="m" />
+  <tag type="AnalogInput" name="INPUTANALOG" description="test rtu input analog" driver="RealTime Driver" ioAddress="test3" scanTime="10" scanOnOff="false" lowLimit="10" highLimit="90" units="m" />
   <alarm id="11" type="HIGH" priority="3" limit="85" tagName="INPUTANALOG" />
+  <tag type="AnalogInput" name="analogRTU" description="test" driver="RealTime Driver" ioAddress="test" scanTime="10" scanOnOff="true" lowLimit="0" highLimit="100" units="m" />
+  <alarm id="12" type="HIGH" priority="3" limit="95" tagName="analogRTU" />
+  <alarm id="13" type="LOW" priority="1" limit="10" tagName="analogRTU" />
+  <tag type="DigitalOutput" name="test" description="test" ioAddress="R" initValue="1" />
+  <tag type="AnalogInput" name="testanalogtag" description="test" driver="RealTime Driver" ioAddress="rtutest" scanTime="1" scanOnOff="false" lowLimit="0" highLimit="100" units="s" />
+  <alarm id="14" type="HIGH" priority="1" limit="30" tagName="testanalogtag" />
+  <alarm id="15" type="HIGH" priority="2" limit="40" tagName="testanalogtag" />
 </root>

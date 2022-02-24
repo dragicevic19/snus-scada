@@ -271,6 +271,7 @@ namespace CoreWCFService
         {
             try
             {
+                if (initValue != 0 && initValue != 1) return false;
                 Tag tag = new DigitalOutput(name, description, ioAddress, initValue);
                 lock (tagsLocker)
                 {
